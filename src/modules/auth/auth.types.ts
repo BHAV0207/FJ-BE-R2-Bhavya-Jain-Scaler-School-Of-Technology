@@ -9,12 +9,11 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface AuthResponse {
-  token: string;
-
+export type AuthResponse = {
+  accessToken: string;
   user: {
     id: string;
     name: string;
     email: string;
   };
-}
+};
