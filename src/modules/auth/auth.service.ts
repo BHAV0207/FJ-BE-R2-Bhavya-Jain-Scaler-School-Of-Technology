@@ -8,13 +8,14 @@ import { env } from "../../config/env.js";
 import * as userRepository from "../user/user.repository.js";
 
 import type { RegisterRequest, AuthResponse } from "./auth.types.js";
+import { AppError } from "../../shared/errors/AppErrors.js";
 
 export async function register(input: RegisterRequest): Promise<AuthResponse> {
   // Check if email already exists
   const existingUser = await userRepository.findByEmail(input.email);
 
   if (existingUser) {
-    throw new Error("User already exists");
+    throw new AppError("User already exists", 409);
   }
 
   // Hash password
