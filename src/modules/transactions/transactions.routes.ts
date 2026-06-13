@@ -18,4 +18,22 @@ router.get(
   transactionController.getTransactions,
 );
 
+router.get(
+  "/:id",
+  authenticate,
+  transactionController.getTransactionById,
+);
+
+router.put(
+  "/:id",
+  authenticate,
+  transactionController.updateTransaction,
+);
+
+router.delete(
+  "/:id",
+  authenticate,
+  transactionController.deleteTransaction,
+);
+
 export default router;
