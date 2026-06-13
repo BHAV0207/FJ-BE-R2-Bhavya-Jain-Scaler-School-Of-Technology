@@ -66,7 +66,10 @@ CREATE TABLE transactions (
     transaction_type VARCHAR(20) NOT NULL
         CHECK(transaction_type IN ('income','expense','refund')),
 
-    currency CHAR(3) NOT NULL,
+    currency CHAR(3) NOT NULL
+        CHECK(length(currency)=3)
+        CHECK(currency = UPPER(currency))
+        DEFAULT 'USD',
 
     description TEXT,
 
