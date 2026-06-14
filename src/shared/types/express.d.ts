@@ -1,5 +1,4 @@
 import { JwtPayload } from "jsonwebtoken";
-import type { User} from "../modules/user/entity/user.entity.js";
 
 declare global {
   namespace Express {
@@ -14,11 +13,17 @@ declare global {
 export {};
 
 
+import type { UserEntity } from "../modules/user/entity/user.entity.js";
+
 declare global {
+
   namespace Express {
+
     interface User
-      extends User {}
+      extends UserEntity {}
+
   }
+
 }
 
 export {};

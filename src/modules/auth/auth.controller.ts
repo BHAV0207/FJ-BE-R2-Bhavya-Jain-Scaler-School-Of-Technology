@@ -6,6 +6,8 @@ import * as authService from "./auth.service.js";
 import { loginSchema, registerSchema } from "./auth.validation.js";
 import type { User } from "../user/entity/user.entity.js";
 import { GenerateAccessToken } from "../../shared/security/token.service.js";
+import { env } from "../../config/env.js";
+
 
 export async function register(
   req: Request,
@@ -47,21 +49,9 @@ export async function googleCallback(
 
     const accessToken = GenerateAccessToken(user.id);
 
-    return res.status(200).json({
-      success: true,
-
-      data: {
-        accessToken,
-
-        user: {
-          id: user.id,
-
-          name: user.name,
-
-          email: user.email,
-        },
-      },
-    });
+    return res.redirect(
+      `${env.FRONTEND_URL}/oauth-success?token=${accessToken}`,
+    );
   } catch (error) {
     return next(error);
   }

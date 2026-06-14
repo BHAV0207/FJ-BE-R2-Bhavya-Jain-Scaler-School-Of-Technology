@@ -21,8 +21,6 @@ router.get(
 
   passport.authenticate("google", {
     session: false,
-
-    failureRedirect: "/login",
   }),
 
   authController.googleCallback,

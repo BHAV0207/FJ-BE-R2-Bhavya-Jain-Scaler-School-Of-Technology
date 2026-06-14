@@ -11,32 +11,89 @@ passport.use(
     {
       clientID: env.GOOGLE_CLIENT_ID,
 
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      clientSecret:
+        env.GOOGLE_CLIENT_SECRET,
 
-      callbackURL: env.GOOGLE_CALLBACK_URL,
+      callbackURL:
+        env.GOOGLE_CALLBACK_URL,
     },
 
-    async (accessToken, refreshToken, profile, done) => {
+    async (
+      accessToken,
+      refreshToken,
+      profile,
+      done,
+    ) => {
       try {
-        const email = profile.emails?.[0].value;
+        const googleId = profile.id;
+
+        const email =
+          profile.emails?.[0].value;
+
+        const name =
+          profile.displayName;
 
         if (!email) {
-          return done(new Error("No email"));
+          return done(
+            new Error(
+              "Google account has no email",
+            ),
+          );
         }
 
-        let user = await userRepository.findByEmail(email);
+        let user =
+          await userRepository.findByGoogleId(
+            googleId,
+          );
 
-        if (!user) {
-          user = await userRepository.createUser({
-            name: profile.displayName,
+        if (user) {
+          return done(
+            null,
+            user,
+          );
+        }
+
+        user =
+          await userRepository.findByEmail(
+            email,
+          );
+
+        if (user) {
+          if (!user.googleId) {
+            await userRepository.linkGoogleAccount(
+              user.id,
+              googleId,
+            );
+
+            user =
+              await userRepository.findByEmail(
+                email,
+              );
+          }
+
+          return done(
+            null,
+            user,
+          );
+        }
+
+        user =
+          await userRepository.createUser({
+            name,
 
             email,
 
-            passwordHash: "",
-          });
-        }
+            passwordHash: null,
 
-        return done(null, user);
+            provider: "google",
+
+            googleId,
+          });
+
+        return done(
+          null,
+          user,
+        );
       } catch (error) {
         done(error as Error);
       }
