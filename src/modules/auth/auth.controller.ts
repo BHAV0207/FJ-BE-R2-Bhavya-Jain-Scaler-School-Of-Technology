@@ -4,6 +4,8 @@ import type { Request, Response, NextFunction } from "express";
 
 import * as authService from "./auth.service.js";
 import { loginSchema, registerSchema } from "./auth.validation.js";
+import type { User } from "../user/entity/user.entity.js";
+import { GenerateAccessToken } from "../../shared/security/token.service.js";
 
 export async function register(
   req: Request,
@@ -32,5 +34,35 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     });
   } catch (error) {
     next(error);
+  }
+}
+
+export async function googleCallback(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const user = req.user as User;
+
+    const accessToken = GenerateAccessToken(user.id);
+
+    return res.status(200).json({
+      success: true,
+
+      data: {
+        accessToken,
+
+        user: {
+          id: user.id,
+
+          name: user.name,
+
+          email: user.email,
+        },
+      },
+    });
+  } catch (error) {
+    return next(error);
   }
 }

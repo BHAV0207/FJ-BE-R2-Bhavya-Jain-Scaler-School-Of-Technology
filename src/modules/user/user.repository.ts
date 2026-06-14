@@ -6,10 +6,19 @@ import type { User } from "./entity/user.entity.js";
 function mapRowToUser(row: any): User {
   return {
     id: row.id,
+
     name: row.name,
+
     email: row.email,
+
     passwordHash: row.password_hash,
+
+    provider: row.provider,
+
+    googleId: row.google_id,
+
     createdAt: row.created_at,
+
     updatedAt: row.updated_at,
   };
 }
@@ -17,9 +26,9 @@ function mapRowToUser(row: any): User {
 export async function findByEmail(email: string): Promise<User | null> {
   const result = await pool.query(
     `
-        SELECT id, name, email, password_hash, created_at, updated_at
+        SELECT id, name, email, password_hash, provider, google_id, created_at, updated_at
         FROM users
-        WHERE email = $1
+        WHERE email=$1
     `,
     [email],
   );
@@ -34,13 +43,32 @@ export async function findByEmail(email: string): Promise<User | null> {
 export async function createUser(dto: CreateUserDto): Promise<User> {
   const result = await pool.query(
     `
-        INSERT INTO users
-        ( name, email, password_hash )
+        INSERT INTO users (
+          name,
+          email,
+          password_hash,
+          provider,
+          google_id
+        )
         VALUES
-        ( $1, $2, $3 )
-        RETURNING id, name, email, password_hash, created_at, updated_at
+        ( $1, $2, $3, $4, $5 )
+        RETURNING
+          id,
+          name,
+          email,
+          password_hash,
+          provider,
+          google_id,
+          created_at,
+updated_at  
     `,
-    [dto.name, dto.email, dto.passwordHash],
+    [
+      dto.name,
+      dto.email,
+      dto.passwordHash,
+      dto.provider ?? "local",
+      dto.googleId ?? null,
+    ],
   );
 
   return mapRowToUser(result.rows[0]);
@@ -99,12 +127,56 @@ export async function updateUser(
 
   const row = result.rows[0];
 
-  return {
-    id: row.id,
-    name: row.name,
-    email: row.email,
-    passwordHash: row.password_hash,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
+  return mapRowToUser(row);
+}
+
+export async function findByGoogleId(
+  googleId: string,
+): Promise<UserEntity | null> {
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      name,
+      email,
+      password_hash,
+      provider,
+      google_id,
+      created_at,
+      updated_at
+    FROM users
+    WHERE google_id = $1
+    `,
+    [googleId],
+  );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  const row = result.rows[0];
+
+  return mapRowToUser(row);
+}
+
+export async function linkGoogleAccount(
+  userId: string,
+  googleId: string,
+): Promise<void> {
+  await pool.query(
+    `
+    UPDATE users
+
+    SET
+
+      provider='google',
+
+      google_id=$1,
+
+      updated_at=NOW()
+
+    WHERE id=$2
+    `,
+    [googleId, userId],
+  );
 }
