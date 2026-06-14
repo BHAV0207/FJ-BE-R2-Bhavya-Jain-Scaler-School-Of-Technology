@@ -16,4 +16,6 @@ router.put("/:id", authenticate, budgetController.updateBudget);
 
 router.delete("/:id", authenticate, budgetController.deleteBudget);
 
+router.get("/progress", authenticate, budgetController.getBudgetProgress);
+
 export default router;

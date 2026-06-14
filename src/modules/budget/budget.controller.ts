@@ -105,3 +105,20 @@ export async function deleteBudget(
     return next(error);
   }
 }
+
+export async function getBudgetProgress(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const response = await budgetService.getBudgetProgress(req.user.userId);
+
+    return res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}

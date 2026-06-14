@@ -9,6 +9,7 @@ import type { UpdateBudgetDto } from "./dto/update-budget.dto.js";
 import type { BudgetResponseDto } from "./dto/budget-response.dto.js";
 import type { GetBudgetsDto } from "./dto/get-budgets.dto.js";
 import type { GetBudgetsResponseDto } from "./dto/get-budgets-response.dto.js";
+import type { BudgetProgressDto } from "./dto/budget-progress.dto.js";
 
 export async function createBudget(
   userId: string,
@@ -180,4 +181,35 @@ export async function deleteBudget(
   }
 
   await budgetRepository.deleteBudget(budgetId);
+}
+
+export async function getBudgetProgress(
+  userId: string,
+): Promise<BudgetProgressDto[]> {
+  const rows = await budgetRepository.getBudgetProgress(userId);
+
+  return rows.map((row) => {
+    const budget = Number(row.budget);
+
+    const spent = Number(row.spent);
+
+    const remaining = budget - spent;
+
+    return {
+      categoryId: row.category_id,
+
+      categoryName: row.category_name,
+
+      budget: budget.toFixed(2),
+
+      spent: spent.toFixed(2),
+
+      remaining: remaining.toFixed(2),
+
+      percentageUsed:
+        budget === 0 ? 0 : Number(((spent / budget) * 100).toFixed(2)),
+
+      isOverBudget: spent > budget,
+    };
+  });
 }

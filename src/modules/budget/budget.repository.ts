@@ -295,3 +295,55 @@ export async function deleteBudget(budgetId: string): Promise<void> {
     [budgetId],
   );
 }
+
+export async function getBudgetProgress(userId: string) {
+  const result = await pool.query(
+    `
+    SELECT
+
+      b.id,
+
+      c.id as category_id,
+
+      c.name as category_name,
+
+      b.amount as budget,
+
+      COALESCE(
+        SUM(t.amount),
+        0
+      ) as spent
+
+    FROM budgets b
+
+    JOIN categories c
+
+      ON c.id=b.category_id
+
+    LEFT JOIN transactions t
+
+      ON t.category_id=b.category_id
+
+      AND t.user_id=b.user_id
+
+      AND t.transaction_type='expense'
+
+      AND DATE_TRUNC('month',t.transaction_date)
+      =
+      DATE_TRUNC('month',b.budget_period)
+
+    WHERE b.user_id=$1
+
+    GROUP BY
+      b.id,
+      c.id,
+      c.name,
+      b.amount
+
+    ORDER BY c.name
+    `,
+    [userId],
+  );
+
+  return result.rows;
+}
