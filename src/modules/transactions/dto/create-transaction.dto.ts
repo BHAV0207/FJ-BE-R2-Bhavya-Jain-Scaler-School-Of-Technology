@@ -9,7 +9,7 @@ export interface CreateTransactionDto {
 
   transactionType: "income" | "expense" | "refund";
 
-  description?: string;
+  description?: string | undefined;
 
   transactionDate: string;
 }

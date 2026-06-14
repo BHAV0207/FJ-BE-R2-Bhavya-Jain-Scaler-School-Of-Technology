@@ -48,6 +48,10 @@ export async function login(dto:LoginRequestDto) : Promise<AuthResponseDto> {
     throw new AppError("Invalid email or password", 401);
   }
 
+  if (!user.passwordHash) {
+    throw new AppError("Invalid email or password", 401);
+  }
+
   const isPasswordValid = await bcrypt.compare(
     dto.password,
     user.passwordHash,

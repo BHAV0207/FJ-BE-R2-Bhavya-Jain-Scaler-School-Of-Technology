@@ -8,7 +8,7 @@ export async function getSummary(
   next: NextFunction,
 ) {
   try {
-    const response = await reportsService.getSummary(req.user.userId);
+    const response = await reportsService.getSummary(req.user!.id);
 
     return res.status(200).json({
       success: true,
@@ -26,7 +26,7 @@ export async function getCategoryWiseReport(
 ) {
   try {
     const response = await reportsService.getCategoryWiseReport(
-      req.user.userId,
+      req.user!.id,
     );
 
     return res.status(200).json({
@@ -44,7 +44,7 @@ export async function getMonthlyReport(
   next: NextFunction,
 ) {
   try {
-    const response = await reportsService.getMonthlyReport(req.user.userId);
+    const response = await reportsService.getMonthlyReport(req.user!.id);
 
     return res.status(200).json({
       success: true,

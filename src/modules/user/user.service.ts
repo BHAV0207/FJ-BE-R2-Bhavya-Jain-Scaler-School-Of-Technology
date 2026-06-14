@@ -1,10 +1,10 @@
 import { AppError } from "../../shared/errors/AppErrors.js";
 import type { UpdateUserDto } from "./dto/update-user.dto.js";
-import type { GetProfileDto, UserProfileDto } from "./dto/user-profile.dto.js";
+import type { GetProfileDto } from "./dto/user-profile.dto.js";
 import { getById } from "./user.repository.js";
 import * as userRepository from "./user.repository.js";
 
-export async function getProfile(userId: string): Promise<UserProfileDto> {
+export async function getProfile(userId: string): Promise<GetProfileDto> {
   const user = await getById(userId);
 
   if (!user) {
@@ -15,6 +15,7 @@ export async function getProfile(userId: string): Promise<UserProfileDto> {
     id: user.id,
     name: user.name,
     email: user.email,
+    preferredCurrency: user.preferredCurrency,
   };
 }
 

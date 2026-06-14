@@ -14,7 +14,7 @@ export async function getDashboard(
   try {
     const response =
       await dashboardService.getDashboard(
-        req.user.userId,
+        req.user!.id,
       );
 
     return res.status(200).json({

@@ -28,7 +28,7 @@ passport.use(
         const googleId = profile.id;
 
         const email =
-          profile.emails?.[0].value;
+          profile.emails?.[0]?.value;
 
         const name =
           profile.displayName;
@@ -73,7 +73,7 @@ passport.use(
 
           return done(
             null,
-            user,
+            user || undefined,
           );
         }
 
@@ -92,7 +92,7 @@ passport.use(
 
         return done(
           null,
-          user,
+          user || undefined,
         );
       } catch (error) {
         done(error as Error);

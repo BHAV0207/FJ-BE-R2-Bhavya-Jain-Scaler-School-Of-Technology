@@ -1,17 +1,17 @@
 export interface UpdateTransactionRepositoryDto {
-  categoryId?: string;
+  categoryId?: string | undefined;
 
-  amount?: number;
+  amount?: number | undefined;
 
-  currency?: string;
+  currency?: string | undefined;
 
-  exchangeRate?: number;
+  exchangeRate?: number | undefined;
 
-  baseAmount?: number;
+  baseAmount?: number | undefined;
 
-  transactionType?: "income" | "expense" | "refund";
+  transactionType?: "income" | "expense" | "refund" | undefined;
 
-  description?: string;
+  description?: string | undefined;
 
-  transactionDate?: string;
+  transactionDate?: string | undefined;
 }

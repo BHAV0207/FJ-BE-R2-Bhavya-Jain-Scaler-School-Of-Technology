@@ -9,7 +9,7 @@ export async function getProfile(
 ) {
   try {
     const response = await userService.getProfile(
-      req.user.userId
+      req.user!.id
     );
 
     return res.status(200).json({
@@ -30,7 +30,7 @@ export async function updateProfile(
     const dto = updateUserSchema.parse(req.body);
 
     const response = await userService.updateProfile(
-      req.user.userId,
+      req.user!.id,
       dto,
     );
 

@@ -1,7 +1,7 @@
 export interface UpdateBudgetDto {
-  categoryId?: string;
+  categoryId?: string | undefined;
 
-  amount?: number;
+  amount?: number | undefined;
 
-  budgetPeriod?: string;
+  budgetPeriod?: string | undefined;
 }

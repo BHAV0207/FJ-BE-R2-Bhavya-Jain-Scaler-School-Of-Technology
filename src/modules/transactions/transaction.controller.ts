@@ -23,8 +23,8 @@ export async function createTransaction(
 
     const response =
       await transactionService.createTransaction(
-        req.user.userId,
-        dto,
+        req.user!.id,
+        dto as any,
       );
 
     return res.status(201).json({
@@ -47,7 +47,7 @@ export async function getTransactions(
 
     const response =
       await transactionService.getTransactions(
-        req.user.userId,
+        req.user!.id,
         dto,
       );
 
@@ -68,8 +68,8 @@ export async function getTransactionById(
   try {
     const response =
       await transactionService.getTransactionById(
-        req.user.userId,
-        req.params.id,
+        req.user!.id,
+        req.params.id as string,
       );
 
     return res.status(200).json({
@@ -94,9 +94,9 @@ export async function updateTransaction(
 
     const response =
       await transactionService.updateTransaction(
-        req.user.userId,
-        req.params.id,
-        dto,
+        req.user!.id,
+        req.params.id as string,
+        dto as any,
       );
 
     return res.status(200).json({
@@ -115,8 +115,8 @@ export async function deleteTransaction(
 ) {
   try {
     await transactionService.deleteTransaction(
-      req.user.userId,
-      req.params.id,
+      req.user!.id,
+      req.params.id as string,
     );
 
     return res.status(200).json({

@@ -8,6 +8,7 @@ import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import reportsRoutes from "./modules/reports/reports.routes.js";
 import path from "path";
 import receiptRoutes from "./modules/uploads/receipt/receipt.routes.js";
+import categoryRoutes from "./modules/category/category.routes.js";
 import passport from "./shared/security/passport.js";
 import { startBudgetNotificationJob } from "./shared/jobs/budget-notification.job.js";
 
@@ -23,6 +24,7 @@ app.use("/api/v1/transactions", transactionRoutes);
 app.use("/api/v1/budgets", budgetRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/api/v1/reports", reportsRoutes);
+app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/v1/receipts", receiptRoutes);
 

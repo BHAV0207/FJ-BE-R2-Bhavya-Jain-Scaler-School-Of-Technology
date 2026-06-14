@@ -1,7 +1,9 @@
 import type { SupportedCurrency } from "../../../shared/currency/currencies.js";
 
 export interface UpdateUserDto {
-  name?: string;
+  name?: string | undefined;
 
-  preferredCurrency?: SupportedCurrency;
+  email?: string | undefined;
+
+  preferredCurrency?: SupportedCurrency | undefined;
 }

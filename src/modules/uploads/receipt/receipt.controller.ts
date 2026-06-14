@@ -18,7 +18,7 @@ export async function uploadReceipt(
       transactionId: req.body.transactionId,
     });
 
-    const response = await receiptService.uploadReceipt(req.user.userId, {
+    const response = await receiptService.uploadReceipt(req.user!.id, {
       transactionId: body.transactionId,
 
       fileName: req.file.originalname,
@@ -46,8 +46,8 @@ export async function getReceipt(
 ) {
   try {
     const response = await receiptService.getReceipt(
-      req.user.userId,
-      req.params.transactionId,
+      req.user!.id,
+      req.params.transactionId as string,
     );
 
     return res.status(200).json({
@@ -65,7 +65,7 @@ export async function deleteReceipt(
   next: NextFunction,
 ) {
   try {
-    await receiptService.deleteReceipt(req.user.userId, req.params.id);
+    await receiptService.deleteReceipt(req.user!.id, req.params.id as string);
 
     return res.status(200).json({
       success: true,

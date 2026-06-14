@@ -11,7 +11,7 @@ export interface CreateTransactionRepositoryDto {
 
   transactionType: "income" | "expense" | "refund";
 
-  description?: string;
+  description?: string | undefined;
 
   transactionDate: string;
 }

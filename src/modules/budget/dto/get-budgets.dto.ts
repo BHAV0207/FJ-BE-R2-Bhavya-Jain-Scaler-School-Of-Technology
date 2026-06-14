@@ -3,9 +3,9 @@ export interface GetBudgetsDto {
 
   limit: number;
 
-  categoryId?: string;
+  categoryId?: string | undefined;
 
-  budgetPeriod?: string;
+  budgetPeriod?: string | undefined;
 
   sortBy: "budgetPeriod" | "amount" | "createdAt";
 

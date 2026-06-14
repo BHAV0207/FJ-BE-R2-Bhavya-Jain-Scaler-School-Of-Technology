@@ -18,8 +18,8 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
     const payload = VerifyAccessToken(token);
 
-    req.user = {
-      userId: payload.userId,
+    (req as any).user = {
+      id: payload.userId,
     };
     next();
   } catch {

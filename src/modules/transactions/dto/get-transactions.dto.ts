@@ -3,13 +3,13 @@ export interface GetTransactionsDto {
 
   limit: number;
 
-  transactionType?: "income" | "expense" | "refund";
+  transactionType?: "income" | "expense" | "refund" | undefined;
 
-  categoryId?: string;
+  categoryId?: string | undefined;
 
-  startDate?: string;
+  startDate?: string | undefined;
 
-  endDate?: string;
+  endDate?: string | undefined;
 
   sortBy: "transactionDate" | "amount" | "createdAt";
 

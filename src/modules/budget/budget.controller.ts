@@ -16,7 +16,7 @@ export async function createBudget(
   try {
     const dto = createBudgetSchema.parse(req.body);
 
-    const response = await budgetService.createBudget(req.user.userId, dto);
+    const response = await budgetService.createBudget(req.user!.id, dto);
 
     return res.status(201).json({
       success: true,
@@ -35,7 +35,7 @@ export async function getBudgets(
   try {
     const dto = getBudgetsSchema.parse(req.query);
 
-    const response = await budgetService.getBudgets(req.user.userId, dto);
+    const response = await budgetService.getBudgets(req.user!.id, dto);
 
     return res.status(200).json({
       success: true,
@@ -53,8 +53,8 @@ export async function getBudgetById(
 ) {
   try {
     const response = await budgetService.getBudgetById(
-      req.user.userId,
-      req.params.id,
+      req.user!.id,
+      req.params.id as string,
     );
 
     return res.status(200).json({
@@ -75,8 +75,8 @@ export async function updateBudget(
     const dto = updateBudgetSchema.parse(req.body);
 
     const response = await budgetService.updateBudget(
-      req.user.userId,
-      req.params.id,
+      req.user!.id,
+      req.params.id as string,
       dto,
     );
 
@@ -95,7 +95,7 @@ export async function deleteBudget(
   next: NextFunction,
 ) {
   try {
-    await budgetService.deleteBudget(req.user.userId, req.params.id);
+    await budgetService.deleteBudget(req.user!.id, req.params.id as string);
 
     return res.status(200).json({
       success: true,
@@ -112,7 +112,7 @@ export async function getBudgetProgress(
   next: NextFunction,
 ) {
   try {
-    const response = await budgetService.getBudgetProgress(req.user.userId);
+    const response = await budgetService.getBudgetProgress(req.user!.id);
 
     return res.status(200).json({
       success: true,

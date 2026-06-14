@@ -310,7 +310,13 @@ export async function getBudgetProgress(userId: string) {
       b.amount as budget,
 
       COALESCE(
-        SUM(t.amount),
+        SUM(
+          CASE
+            WHEN t.transaction_type = 'expense' THEN t.base_amount
+            WHEN t.transaction_type = 'refund' THEN -t.base_amount
+            ELSE 0
+          END
+        ),
         0
       ) as spent
 
@@ -326,7 +332,7 @@ export async function getBudgetProgress(userId: string) {
 
       AND t.user_id=b.user_id
 
-      AND t.transaction_type='expense'
+      AND (t.transaction_type='expense' OR t.transaction_type='refund')
 
       AND DATE_TRUNC('month',t.transaction_date)
       =
@@ -379,7 +385,13 @@ export async function getAllBudgetProgress() {
       b.amount AS budget,
 
       COALESCE(
-        SUM(t.amount),
+        SUM(
+          CASE
+            WHEN t.transaction_type = 'expense' THEN t.base_amount
+            WHEN t.transaction_type = 'refund' THEN -t.base_amount
+            ELSE 0
+          END
+        ),
         0
       ) AS spent
 
@@ -395,7 +407,7 @@ export async function getAllBudgetProgress() {
 
       AND t.user_id = b.user_id
 
-      AND t.transaction_type = 'expense'
+      AND (t.transaction_type = 'expense' OR t.transaction_type = 'refund')
 
       AND DATE_TRUNC('month', t.transaction_date)
           =

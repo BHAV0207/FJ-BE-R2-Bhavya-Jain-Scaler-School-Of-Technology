@@ -1,3 +1,5 @@
+import type { SupportedCurrency } from "../../../shared/currency/currencies.js";
+
 export interface TransactionEntity {
   id: string;
 
@@ -7,7 +9,7 @@ export interface TransactionEntity {
 
   amount: number;
 
-  currency: string;
+  currency: SupportedCurrency;
 
   exchangeRate: number;
 
