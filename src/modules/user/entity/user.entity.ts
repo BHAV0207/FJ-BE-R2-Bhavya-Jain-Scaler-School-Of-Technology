@@ -2,7 +2,7 @@ import type {
   SupportedCurrency,
 } from "../../../shared/currency/currencies.js";
 
-export interface UserEntity {
+export interface User {
   id: string;
 
   name: string;

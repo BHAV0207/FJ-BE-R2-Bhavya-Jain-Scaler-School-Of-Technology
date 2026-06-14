@@ -9,6 +9,8 @@ export const updateUserSchema = z
       .email()
       .transform((email) => email.toLowerCase())
       .optional(),
+      
+    preferredCurrency: z.enum(["INR", "USD", "EUR", "GBP"]).optional(),
   })
   .refine((data) => data.name !== undefined || data.email !== undefined, {
     message: "At least one field must be provided",
