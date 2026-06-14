@@ -8,30 +8,36 @@ export async function getSummary(userId: string) {
       COALESCE(
         SUM(
           CASE
-            WHEN transaction_type='income'
-            THEN amount
+            WHEN transaction_type = 'income'
+            THEN base_amount
           END
-      ),0) as total_income,
+        ),
+        0
+      ) AS total_income,
 
       COALESCE(
         SUM(
           CASE
-            WHEN transaction_type='expense'
-            THEN amount
+            WHEN transaction_type = 'expense'
+            THEN base_amount
           END
-      ),0) as total_expense,
+        ),
+        0
+      ) AS total_expense,
 
       COALESCE(
         SUM(
           CASE
-            WHEN transaction_type='refund'
-            THEN amount
+            WHEN transaction_type = 'refund'
+            THEN base_amount
           END
-      ),0) as total_refund
+        ),
+        0
+      ) AS total_refund
 
     FROM transactions
 
-    WHERE user_id=$1
+    WHERE user_id = $1
     `,
     [userId],
   );
@@ -44,25 +50,32 @@ export async function getCategoryWiseReport(userId: string) {
     `
     SELECT
 
+      c.id,
+
       c.name,
 
-      SUM(t.amount) as total
+      COALESCE(
+        SUM(t.base_amount),
+        0
+      ) AS total
 
     FROM transactions t
 
     JOIN categories c
 
-    ON c.id=t.category_id
+      ON c.id = t.category_id
 
     WHERE
 
-    t.user_id=$1
+      t.user_id = $1
 
-    AND
+      AND t.transaction_type = 'expense'
 
-    t.transaction_type='expense'
+    GROUP BY
 
-    GROUP BY c.name
+      c.id,
+
+      c.name
 
     ORDER BY total DESC
     `,
@@ -80,53 +93,41 @@ export async function getMonthlyReport(userId: string) {
       TO_CHAR(
         transaction_date,
         'YYYY-MM'
-      ) as month,
+      ) AS month,
 
       COALESCE(
-
-      SUM(
-
-      CASE
-
-      WHEN transaction_type='income'
-
-      THEN amount
-
-      END
-
-      ),0) as income,
+        SUM(
+          CASE
+            WHEN transaction_type = 'income'
+            THEN base_amount
+          END
+        ),
+        0
+      ) AS income,
 
       COALESCE(
-
-      SUM(
-
-      CASE
-
-      WHEN transaction_type='expense'
-
-      THEN amount
-
-      END
-
-      ),0) as expense,
+        SUM(
+          CASE
+            WHEN transaction_type = 'expense'
+            THEN base_amount
+          END
+        ),
+        0
+      ) AS expense,
 
       COALESCE(
-
-      SUM(
-
-      CASE
-
-      WHEN transaction_type='refund'
-
-      THEN amount
-
-      END
-
-      ),0) as refund
+        SUM(
+          CASE
+            WHEN transaction_type = 'refund'
+            THEN base_amount
+          END
+        ),
+        0
+      ) AS refund
 
     FROM transactions
 
-    WHERE user_id=$1
+    WHERE user_id = $1
 
     GROUP BY month
 
