@@ -347,3 +347,68 @@ export async function getBudgetProgress(userId: string) {
 
   return result.rows;
 }
+
+export async function markNotificationSent(budgetId: string): Promise<void> {
+  await pool.query(
+    `
+    UPDATE budgets
+
+    SET
+
+    notification_sent = TRUE
+
+    WHERE id = $1
+    `,
+    [budgetId],
+  );
+}
+
+export async function getAllBudgetProgress() {
+  const result = await pool.query(
+    `
+    SELECT
+
+      b.id AS budget_id,
+
+      b.user_id,
+
+      b.notification_sent,
+
+      c.name AS category_name,
+
+      b.amount AS budget,
+
+      COALESCE(
+        SUM(t.amount),
+        0
+      ) AS spent
+
+    FROM budgets b
+
+    JOIN categories c
+
+      ON c.id = b.category_id
+
+    LEFT JOIN transactions t
+
+      ON t.category_id = b.category_id
+
+      AND t.user_id = b.user_id
+
+      AND t.transaction_type = 'expense'
+
+      AND DATE_TRUNC('month', t.transaction_date)
+          =
+          DATE_TRUNC('month', b.budget_period)
+
+    GROUP BY
+      b.id,
+      b.user_id,
+      b.notification_sent,
+      c.name,
+      b.amount
+    `,
+  );
+
+  return result.rows;
+}

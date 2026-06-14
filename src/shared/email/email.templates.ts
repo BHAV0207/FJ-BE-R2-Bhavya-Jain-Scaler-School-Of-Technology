@@ -1,27 +1,64 @@
 export function budgetExceededTemplate(
-  name: string,
+  userName: string,
   category: string,
   budget: number,
   spent: number,
-) {
+): string {
+  const exceededBy = spent - budget;
 
   return `
+  <html>
 
-    <h2>Budget Alert</h2>
+    <body>
 
-    <p>Hello ${name},</p>
+      <h2>Budget Alert</h2>
 
-    <p>You have exceeded your budget.</p>
+      <p>Hello ${userName},</p>
 
-    <ul>
+      <p>Your budget has been exceeded.</p>
 
-      <li>Category: ${category}</li>
+      <table border="1" cellpadding="8">
 
-      <li>Budget: ₹${budget}</li>
+        <tr>
 
-      <li>Spent: ₹${spent}</li>
+          <td>Category</td>
 
-    </ul>
+          <td>${category}</td>
 
+        </tr>
+
+        <tr>
+
+          <td>Budget</td>
+
+          <td>₹${budget.toFixed(2)}</td>
+
+        </tr>
+
+        <tr>
+
+          <td>Spent</td>
+
+          <td>₹${spent.toFixed(2)}</td>
+
+        </tr>
+
+        <tr>
+
+          <td>Exceeded By</td>
+
+          <td>₹${exceededBy.toFixed(2)}</td>
+
+        </tr>
+
+      </table>
+
+      <br/>
+
+      <p>Please review your spending.</p>
+
+    </body>
+
+  </html>
   `;
 }

@@ -3,7 +3,7 @@ import path from "path";
 
 
 import * as receiptRepository from "./receipt.repository.js";
-import * as transactionRepository from "../transactions/transactions.repository.js";
+import * as transactionRepository from "../../transactions/transaction.repository.js";
 import type { UploadReceiptDto } from "./dto/upload-receipt.dto.js";
 import type { ReceiptResponseDto } from "./dto/receipt-response.dto.js";
 import { AppError } from "../../../shared/errors/AppErrors.js";

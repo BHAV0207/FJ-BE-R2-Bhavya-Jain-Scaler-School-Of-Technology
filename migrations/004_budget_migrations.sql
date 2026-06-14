@@ -1,0 +1,7 @@
+ALTER TABLE budgets
+
+ADD COLUMN notification_sent BOOLEAN
+
+NOT NULL
+
+DEFAULT FALSE;

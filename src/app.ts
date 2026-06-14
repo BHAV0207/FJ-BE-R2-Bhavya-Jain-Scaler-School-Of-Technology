@@ -9,12 +9,14 @@ import reportsRoutes from "./modules/reports/reports.routes.js";
 import path from "path";
 import receiptRoutes from "./modules/uploads/receipt/receipt.routes.js";
 import passport from "./shared/security/passport.js";
+import { startBudgetNotificationJob } from "./shared/jobs/budget-notification.job.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(passport.initialize());
-
+startBudgetNotificationJob();
+  
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
