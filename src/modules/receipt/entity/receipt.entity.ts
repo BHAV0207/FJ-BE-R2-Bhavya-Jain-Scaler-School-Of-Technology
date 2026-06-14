@@ -3,7 +3,13 @@ export interface ReceiptEntity {
 
   transactionId: string;
 
+  fileName: string;
+
   fileUrl: string;
+
+  mimeType: string;
+
+  fileSize: number;
 
   uploadedAt: Date;
 }

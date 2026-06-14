@@ -130,7 +130,13 @@ CREATE TABLE receipts (
 
     transaction_id UUID NOT NULL UNIQUE,
 
+    file_name TEXT NOT NULL,
+
     file_url TEXT NOT NULL,
+
+    mime_type TEXT NOT NULL,
+
+    file_size BIGINT NOT NULL,
 
     uploaded_at TIMESTAMP NOT NULL DEFAULT NOW(),
 
