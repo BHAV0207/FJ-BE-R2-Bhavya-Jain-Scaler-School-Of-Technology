@@ -5,6 +5,7 @@ import userRoutes from "./modules/user/user.routes.js";
 import transactionRoutes from "./modules/transactions/transactions.routes.js";
 import budgetRoutes from "./modules/budget/budget.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
+import reportsRoutes from "./modules/reports/reports.routes.js";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
 app.use("/api/v1/budgets", budgetRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/api/v1/reports", reportsRoutes);
 
 app.use(errorHandler);
 
