@@ -8,8 +8,8 @@ export async function getDashboardSummary(userId: string) {
       COALESCE(
         SUM(
           CASE
-            WHEN transaction_type='income'
-            THEN amount
+            WHEN transaction_type = 'income'
+            THEN base_amount
           END
         ),
         0
@@ -18,8 +18,8 @@ export async function getDashboardSummary(userId: string) {
       COALESCE(
         SUM(
           CASE
-            WHEN transaction_type='expense'
-            THEN amount
+            WHEN transaction_type = 'expense'
+            THEN base_amount
           END
         ),
         0
@@ -28,8 +28,8 @@ export async function getDashboardSummary(userId: string) {
       COALESCE(
         SUM(
           CASE
-            WHEN transaction_type='refund'
-            THEN amount
+            WHEN transaction_type = 'refund'
+            THEN base_amount
           END
         ),
         0
@@ -37,7 +37,7 @@ export async function getDashboardSummary(userId: string) {
 
     FROM transactions
 
-    WHERE user_id=$1
+    WHERE user_id = $1
     `,
     [userId],
   );
@@ -58,22 +58,15 @@ export async function getMonthlyBudget(userId: string) {
     FROM budgets
 
     WHERE
+      user_id = $1
 
-    user_id=$1
-
-    AND
-
-    DATE_TRUNC(
-      'month',
-      budget_period
-    )
-
-    =
-
-    DATE_TRUNC(
-      'month',
-      CURRENT_DATE
-    )
+      AND DATE_TRUNC(
+        'month',
+        budget_period
+      ) = DATE_TRUNC(
+        'month',
+        CURRENT_DATE
+      )
     `,
     [userId],
   );
@@ -86,34 +79,25 @@ export async function getCurrentMonthExpense(userId: string) {
     `
     SELECT
 
-    COALESCE(
-      SUM(amount),
-      0
-    ) AS budget_used
+      COALESCE(
+        SUM(base_amount),
+        0
+      ) AS budget_used
 
     FROM transactions
 
     WHERE
+      user_id = $1
 
-    user_id=$1
+      AND transaction_type = 'expense'
 
-    AND
-
-    transaction_type='expense'
-
-    AND
-
-    DATE_TRUNC(
-      'month',
-      transaction_date
-    )
-
-    =
-
-    DATE_TRUNC(
-      'month',
-      CURRENT_DATE
-    )
+      AND DATE_TRUNC(
+        'month',
+        transaction_date
+      ) = DATE_TRUNC(
+        'month',
+        CURRENT_DATE
+      )
     `,
     [userId],
   );
@@ -130,9 +114,13 @@ export async function getRecentTransactions(userId: string) {
 
       amount,
 
-      transaction_type,
-
       currency,
+
+      exchange_rate,
+
+      base_amount,
+
+      transaction_type,
 
       description,
 
@@ -140,7 +128,7 @@ export async function getRecentTransactions(userId: string) {
 
     FROM transactions
 
-    WHERE user_id=$1
+    WHERE user_id = $1
 
     ORDER BY created_at DESC
 
@@ -161,21 +149,22 @@ export async function getExpenseByCategory(userId: string) {
 
       c.name,
 
-      SUM(t.amount) AS total
+      COALESCE(
+        SUM(t.base_amount),
+        0
+      ) AS total
 
     FROM transactions t
 
     LEFT JOIN categories c
 
-    ON c.id=t.category_id
+      ON c.id = t.category_id
 
     WHERE
 
-      t.user_id=$1
+      t.user_id = $1
 
-      AND
-
-      t.transaction_type='expense'
+      AND t.transaction_type = 'expense'
 
     GROUP BY
 
@@ -199,39 +188,31 @@ export async function getMonthlyTrend(userId: string) {
       TO_CHAR(
         transaction_date,
         'YYYY-MM'
-      ) as month,
+      ) AS month,
 
       COALESCE(
-
-      SUM(
-
-      CASE
-
-      WHEN transaction_type='income'
-
-      THEN amount
-
-      END
-
-      ),0) as income,
+        SUM(
+          CASE
+            WHEN transaction_type = 'income'
+            THEN base_amount
+          END
+        ),
+        0
+      ) AS income,
 
       COALESCE(
-
-      SUM(
-
-      CASE
-
-      WHEN transaction_type='expense'
-
-      THEN amount
-
-      END
-
-      ),0) as expense
+        SUM(
+          CASE
+            WHEN transaction_type = 'expense'
+            THEN base_amount
+          END
+        ),
+        0
+      ) AS expense
 
     FROM transactions
 
-    WHERE user_id=$1
+    WHERE user_id = $1
 
     GROUP BY month
 

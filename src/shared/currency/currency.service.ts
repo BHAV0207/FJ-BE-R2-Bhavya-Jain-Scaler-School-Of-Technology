@@ -1,19 +1,29 @@
-import { EXCHANGE_RATES } from "./exchange-rates.js";
+import { getExchangeRate } from "./exchange-rate.service.js";
 
 import type { SupportedCurrency } from "./currencies.js";
 
-export function convertCurrency(
+export function convertToBaseCurrency(
   amount: number,
-  from: SupportedCurrency,
-  to: SupportedCurrency,
+  currency: SupportedCurrency,
+): {
+  exchangeRate: number;
+
+  baseAmount: number;
+} {
+  const exchangeRate = getExchangeRate(currency);
+
+  return {
+    exchangeRate,
+
+    baseAmount: Number((amount * exchangeRate).toFixed(2)),
+  };
+}
+
+export function convertFromBaseCurrency(
+  baseAmount: number,
+  currency: SupportedCurrency,
 ): number {
-  if (from === to) {
-    return amount;
-  }
+  const exchangeRate = getExchangeRate(currency);
 
-  const amountInInr = amount * EXCHANGE_RATES[from];
-
-  const converted = amountInInr / EXCHANGE_RATES[to];
-
-  return Number(converted.toFixed(2));
+  return Number((baseAmount / exchangeRate).toFixed(2));
 }

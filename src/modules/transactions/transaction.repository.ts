@@ -1,14 +1,14 @@
 import { pool } from "../../database/pool.js";
 
-import type { CreateTransactionDto } from "./dto/create-transaction.dto.js";
+import type { CreateTransactionRepositoryDto } from "./dto/create-transaction-repository.dto.js";
+import type { UpdateTransactionRepositoryDto } from "./dto/update-transaction-repository.dto.js";
 import type { GetTransactionsDto } from "./dto/get-transactions.dto.js";
-import type { UpdateTransactionDto } from "./dto/update-transaction.dto.js";
 
 import type { TransactionEntity } from "./entity/transaction.entity.js";
 
 export async function createTransaction(
   userId: string,
-  dto: CreateTransactionDto,
+  dto: CreateTransactionRepositoryDto,
 ): Promise<TransactionEntity> {
   const result = await pool.query(
     `
@@ -16,19 +16,23 @@ export async function createTransaction(
       user_id,
       category_id,
       amount,
+      base_amount,
+      exchange_rate,
       transaction_type,
       currency,
       description,
       transaction_date
     )
     VALUES (
-      $1,$2,$3,$4,$5,$6,$7
+      $1,$2,$3,$4,$5,$6,$7,$8,$9
     )
     RETURNING
       id,
       user_id,
       category_id,
       amount,
+      base_amount,
+      exchange_rate,
       transaction_type,
       currency,
       description,
@@ -40,6 +44,8 @@ export async function createTransaction(
       userId,
       dto.categoryId,
       dto.amount,
+      dto.baseAmount,
+      dto.exchangeRate,
       dto.transactionType,
       dto.currency,
       dto.description ?? null,
@@ -51,14 +57,27 @@ export async function createTransaction(
 
   return {
     id: row.id,
+
     userId: row.user_id,
+
     categoryId: row.category_id,
-    amount: row.amount,
+
+    amount: Number(row.amount),
+
+    baseAmount: Number(row.base_amount),
+
+    exchangeRate: Number(row.exchange_rate),
+
     transactionType: row.transaction_type,
+
     currency: row.currency,
+
     description: row.description,
+
     transactionDate: row.transaction_date,
+
     createdAt: row.created_at,
+
     updatedAt: row.updated_at,
   };
 }
@@ -112,11 +131,11 @@ export async function findTransactions(
 
   const whereClause = conditions.join(" AND ");
 
-  const sortColumnMap = {
-    transactionDate: "transaction_date",
-    amount: "amount",
-    createdAt: "created_at",
-  };
+const sortColumnMap = {
+  transactionDate: "transaction_date",
+  amount: "base_amount",
+  createdAt: "created_at",
+} as const;
 
   const orderBy = sortColumnMap[dto.sortBy];
 
@@ -145,17 +164,19 @@ export async function findTransactions(
 
   const result = await pool.query(
     `
-      SELECT
-        id,
-        user_id,
-        category_id,
-        amount,
-        transaction_type,
-        currency,
-        description,
-        transaction_date,
-        created_at,
-        updated_at
+     SELECT
+id,
+user_id,
+category_id,
+amount,
+base_amount,
+exchange_rate,
+transaction_type,
+currency,
+description,
+transaction_date,
+created_at,
+updated_at
 
       FROM transactions
 
@@ -172,14 +193,27 @@ export async function findTransactions(
 
   const transactions: TransactionEntity[] = result.rows.map((row) => ({
     id: row.id,
+
     userId: row.user_id,
+
     categoryId: row.category_id,
-    amount: row.amount,
+
+    amount: Number(row.amount),
+
+    baseAmount: Number(row.base_amount),
+
+    exchangeRate: Number(row.exchange_rate),
+
     transactionType: row.transaction_type,
+
     currency: row.currency,
+
     description: row.description,
+
     transactionDate: row.transaction_date,
+
     createdAt: row.created_at,
+
     updatedAt: row.updated_at,
   }));
 
@@ -189,23 +223,36 @@ export async function findTransactions(
   };
 }
 
-
 export async function findTransactionById(
   id: string,
 ): Promise<TransactionEntity | null> {
   const result = await pool.query(
     `
-    SELECT
-      id,
-      user_id,
-      category_id,
-      amount,
-      transaction_type,
-      currency,
-      description,
-      transaction_date,
-      created_at,
-      updated_at
+   SELECT
+
+id,
+
+user_id,
+
+category_id,
+
+amount,
+
+base_amount,
+
+exchange_rate,
+
+transaction_type,
+
+currency,
+
+description,
+
+transaction_date,
+
+created_at,
+
+updated_at
     FROM transactions
     WHERE id = $1
     `,
@@ -220,21 +267,32 @@ export async function findTransactionById(
 
   return {
     id: row.id,
+
     userId: row.user_id,
+
     categoryId: row.category_id,
-    amount: row.amount,
+
+    amount: Number(row.amount),
+
+    baseAmount: Number(row.base_amount),
+
+    exchangeRate: Number(row.exchange_rate),
+
     transactionType: row.transaction_type,
+
     currency: row.currency,
+
     description: row.description,
+
     transactionDate: row.transaction_date,
+
     createdAt: row.created_at,
+
     updatedAt: row.updated_at,
   };
 }
 
-export async function deleteTransaction(
-  id: string,
-): Promise<void> {
+export async function deleteTransaction(id: string): Promise<void> {
   await pool.query(
     `
     DELETE FROM transactions
@@ -244,10 +302,9 @@ export async function deleteTransaction(
   );
 }
 
-
 export async function updateTransaction(
   id: string,
-  dto: UpdateTransactionDto,
+  dto: UpdateTransactionRepositoryDto,
 ): Promise<TransactionEntity> {
   const updates: string[] = [];
   const values: unknown[] = [];
@@ -284,6 +341,18 @@ export async function updateTransaction(
     values.push(dto.transactionDate);
   }
 
+  if (dto.baseAmount !== undefined) {
+    updates.push(`base_amount=$${index++}`);
+
+    values.push(dto.baseAmount);
+  }
+
+  if (dto.exchangeRate !== undefined) {
+    updates.push(`exchange_rate=$${index++}`);
+
+    values.push(dto.exchangeRate);
+  }
+
   updates.push(`updated_at=NOW()`);
 
   values.push(id);
@@ -296,16 +365,30 @@ export async function updateTransaction(
     WHERE id=$${index}
 
     RETURNING
-      id,
-      user_id,
-      category_id,
-      amount,
-      transaction_type,
-      currency,
-      description,
-      transaction_date,
-      created_at,
-      updated_at
+
+id,
+
+user_id,
+
+category_id,
+
+amount,
+
+base_amount,
+
+exchange_rate,
+
+transaction_type,
+
+currency,
+
+description,
+
+transaction_date,
+
+created_at,
+
+updated_at
     `,
     values,
   );
@@ -314,14 +397,27 @@ export async function updateTransaction(
 
   return {
     id: row.id,
+
     userId: row.user_id,
+
     categoryId: row.category_id,
-    amount: row.amount,
+
+    amount: Number(row.amount),
+
+    baseAmount: Number(row.base_amount),
+
+    exchangeRate: Number(row.exchange_rate),
+
     transactionType: row.transaction_type,
+
     currency: row.currency,
+
     description: row.description,
+
     transactionDate: row.transaction_date,
+
     createdAt: row.created_at,
+
     updatedAt: row.updated_at,
   };
 }

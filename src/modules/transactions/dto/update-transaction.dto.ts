@@ -1,11 +1,13 @@
+import type { SupportedCurrency } from "../../../shared/currency/currencies.js";
+
 export interface UpdateTransactionDto {
   categoryId?: string;
 
   amount?: number;
 
-  transactionType?: "income" | "expense" | "refund";
+  currency?: SupportedCurrency;
 
-  currency?: string;
+  transactionType?: "income" | "expense" | "refund";
 
   description?: string;
 

@@ -5,11 +5,15 @@ export interface TransactionEntity {
 
   categoryId: string | null;
 
-  amount: string;
-
-  transactionType: "income" | "expense" | "refund";
+  amount: number;
 
   currency: string;
+
+  exchangeRate: number;
+
+  baseAmount: number;
+
+  transactionType: "income" | "expense" | "refund";
 
   description: string | null;
 
