@@ -23,11 +23,19 @@ const envSchema = z.object({
 
   GOOGLE_CLIENT_ID: z.string(),
 
-GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
 
-GOOGLE_CALLBACK_URL: z.string(),
+  GOOGLE_CALLBACK_URL: z.string(),
 
-FRONTEND_URL: z.string(),
+  FRONTEND_URL: z.string(),
+
+  SMTP_HOST: z.string(),
+
+  SMTP_PORT: z.coerce.number(),
+
+  SMTP_USER: z.string(),
+
+  SMTP_PASSWORD: z.string(),
 });
 
 /**
