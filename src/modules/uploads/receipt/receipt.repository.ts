@@ -1,7 +1,7 @@
-import { pool } from "../../database/pool.js";
 
 import type { ReceiptEntity } from "./entity/receipt.entity.js";
 import type { UploadReceiptDto } from "./dto/upload-receipt.dto.js";
+import { pool } from "../../../database/pool.js";
 
 export async function createReceipt(
   dto: UploadReceiptDto,

@@ -7,7 +7,7 @@ import budgetRoutes from "./modules/budget/budget.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import reportsRoutes from "./modules/reports/reports.routes.js";
 import path from "path";
-
+import receiptRoutes from "./modules/uploads/receipt/receipt.routes.js";
 
 const app = express();
 
@@ -20,6 +20,7 @@ app.use("/api/v1/budgets", budgetRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/api/v1/reports", reportsRoutes);
 app.use("/api/v1/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/receipts", receiptRoutes);
 
 app.use(errorHandler);
 
