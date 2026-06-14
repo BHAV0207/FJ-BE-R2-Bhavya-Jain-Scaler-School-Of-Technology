@@ -1,4 +1,8 @@
-export interface User{
+import type {
+  SupportedCurrency,
+} from "../../../shared/currency/currencies.js";
+
+export interface UserEntity {
   id: string;
 
   name: string;
@@ -10,6 +14,8 @@ export interface User{
   provider: "local" | "google";
 
   googleId: string | null;
+
+  preferredCurrency: SupportedCurrency;
 
   createdAt: Date;
 

@@ -44,31 +44,40 @@ export async function createUser(dto: CreateUserDto): Promise<User> {
   const result = await pool.query(
     `
         INSERT INTO users (
-          name,
-          email,
-          password_hash,
-          provider,
-          google_id
-        )
-        VALUES
-        ( $1, $2, $3, $4, $5 )
-        RETURNING
-          id,
-          name,
-          email,
-          password_hash,
-          provider,
-          google_id,
-          created_at,
-updated_at  
+    name,
+    email,
+    password_hash,
+    provider,
+    google_id,
+    preferred_currency
+)
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6
+)
+RETURNING
+id,
+name,
+email,
+password_hash,
+provider,
+google_id,
+preferred_currency,
+created_at,
+updated_at;
     `,
     [
-      dto.name,
-      dto.email,
-      dto.passwordHash,
-      dto.provider ?? "local",
-      dto.googleId ?? null,
-    ],
+  dto.name,
+  dto.email,
+  dto.passwordHash,
+  dto.provider ?? "local",
+  dto.googleId ?? null,
+  dto.preferredCurrency ?? "INR",
+]
   );
 
   return mapRowToUser(result.rows[0]);

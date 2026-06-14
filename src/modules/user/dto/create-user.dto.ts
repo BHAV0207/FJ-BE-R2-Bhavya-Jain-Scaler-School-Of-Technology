@@ -1,3 +1,5 @@
+import type { SupportedCurrency } from "../../../shared/currency/currencies.js";
+
 export interface CreateUserDto {
   name: string;
 
@@ -8,4 +10,6 @@ export interface CreateUserDto {
   provider?: "local" | "google";
 
   googleId?: string | null;
+
+  preferredCurrency?: SupportedCurrency;
 }
