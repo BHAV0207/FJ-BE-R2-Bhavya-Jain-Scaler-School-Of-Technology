@@ -1,9 +1,25 @@
-export interface ExpenseByCategoryDto {
-  categoryId: string | null;
-
-  categoryName: string | null;
+export interface SummaryDto {
+  totalIncome: string;
 
   totalExpense: string;
+
+  totalRefund: string;
+
+  netSavings: string;
+
+  savingRate: number;
+}
+
+export interface BudgetSummaryDto {
+  monthlyBudget: string;
+
+  budgetUsed: string;
+
+  budgetRemaining: string;
+
+  budgetPercentage: number;
+
+  isOverBudget: boolean;
 }
 
 export interface RecentTransactionDto {
@@ -20,22 +36,30 @@ export interface RecentTransactionDto {
   transactionDate: Date;
 }
 
-export interface DashboardResponseDto {
-  totalIncome: string;
+export interface ExpenseByCategoryDto {
+  categoryId: string | null;
+
+  categoryName: string | null;
 
   totalExpense: string;
+}
 
-  totalRefund: string;
+export interface MonthlyTrendDto {
+  month: string;
 
-  netSavings: string;
+  income: string;
 
-  monthlyBudget: string;
+  expense: string;
+}
 
-  budgetUsed: string;
+export interface DashboardResponseDto {
+  summary: SummaryDto;
 
-  budgetRemaining: string;
+  budget: BudgetSummaryDto;
 
   recentTransactions: RecentTransactionDto[];
 
   expenseByCategory: ExpenseByCategoryDto[];
+
+  monthlyTrend: MonthlyTrendDto[];
 }

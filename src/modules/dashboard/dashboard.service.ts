@@ -1,65 +1,170 @@
 import * as dashboardRepository from "./dashboard.repository.js";
 
-import type { DashboardResponseDto } from "./dto/dashboard-response.dto.js";
+import type {
+  DashboardResponseDto,
+} from "./dto/dashboard-response.dto.js";
+
+function toNumber(
+  value: string | number | null,
+): number {
+  return Number(value ?? 0);
+}
 
 export async function getDashboard(
   userId: string,
 ): Promise<DashboardResponseDto> {
-  const [summary, budget, budgetUsed, recentTransactions, expenseByCategory] =
-    await Promise.all([
-      dashboardRepository.getDashboardSummary(userId),
-      dashboardRepository.getMonthlyBudget(userId),
-      dashboardRepository.getCurrentMonthExpense(userId),
-      dashboardRepository.getRecentTransactions(userId),
-      dashboardRepository.getExpenseByCategory(userId),
-    ]);
+  const [
+    summary,
+    monthlyBudget,
+    budgetUsed,
+    recentTransactions,
+    expenseByCategory,
+    monthlyTrend,
+  ] = await Promise.all([
+    dashboardRepository.getDashboardSummary(userId),
 
-  const totalIncome = Number(summary.total_income);
-  const totalExpense = Number(summary.total_expense);
-  const totalRefund = Number(summary.total_refund);
+    dashboardRepository.getMonthlyBudget(userId),
 
-  const monthlyBudget = Number(budget.monthly_budget);
-  const currentBudgetUsed = Number(budgetUsed.budget_used);
+    dashboardRepository.getCurrentMonthExpense(userId),
 
-  const netSavings = totalIncome - totalExpense + totalRefund;
+    dashboardRepository.getRecentTransactions(userId),
 
-  const budgetRemaining = monthlyBudget - currentBudgetUsed;
+    dashboardRepository.getExpenseByCategory(userId),
+
+    dashboardRepository.getMonthlyTrend(userId),
+  ]);
+
+  const totalIncome = toNumber(
+    summary.total_income,
+  );
+
+  const totalExpense = toNumber(
+    summary.total_expense,
+  );
+
+  const totalRefund = toNumber(
+    summary.total_refund,
+  );
+
+  const budget = toNumber(
+    monthlyBudget.monthly_budget,
+  );
+
+  const spent = toNumber(
+    budgetUsed.budget_used,
+  );
+
+  const netSavings =
+    totalIncome -
+    totalExpense +
+    totalRefund;
+
+  const budgetRemaining =
+    budget - spent;
+
+  const savingRate =
+    totalIncome === 0
+      ? 0
+      : Number(
+          (
+            (netSavings /
+              totalIncome) *
+            100
+          ).toFixed(2),
+        );
+
+  const budgetPercentage =
+    budget === 0
+      ? 0
+      : Number(
+          (
+            (spent / budget) *
+            100
+          ).toFixed(2),
+        );
+
+  const isOverBudget =
+    spent > budget;
 
   return {
-    totalIncome: totalIncome.toFixed(2),
+    summary: {
+      totalIncome:
+        totalIncome.toFixed(2),
 
-    totalExpense: totalExpense.toFixed(2),
+      totalExpense:
+        totalExpense.toFixed(2),
 
-    totalRefund: totalRefund.toFixed(2),
+      totalRefund:
+        totalRefund.toFixed(2),
 
-    netSavings: netSavings.toFixed(2),
+      netSavings:
+        netSavings.toFixed(2),
 
-    monthlyBudget: monthlyBudget.toFixed(2),
+      savingRate,
+    },
 
-    budgetUsed: currentBudgetUsed.toFixed(2),
+    budget: {
+      monthlyBudget:
+        budget.toFixed(2),
 
-    budgetRemaining: budgetRemaining.toFixed(2),
+      budgetUsed:
+        spent.toFixed(2),
 
-    recentTransactions: recentTransactions.map((transaction) => ({
-      id: transaction.id,
+      budgetRemaining:
+        budgetRemaining.toFixed(2),
 
-      amount: transaction.amount,
+      budgetPercentage,
 
-      transactionType: transaction.transaction_type,
+      isOverBudget,
+    },
 
-      currency: transaction.currency,
+    recentTransactions:
+      recentTransactions.map(
+        (transaction) => ({
+          id: transaction.id,
 
-      description: transaction.description,
+          amount:
+            transaction.amount,
 
-      transactionDate: transaction.transaction_date,
-    })),
+          transactionType:
+            transaction.transaction_type,
 
-    expenseByCategory: expenseByCategory.map((category) => ({
-      categoryId: category.id,
+          currency:
+            transaction.currency,
 
-      categoryName: category.name,
+          description:
+            transaction.description,
 
-      totalExpense: category.total,
-    })),
+          transactionDate:
+            transaction.transaction_date,
+        }),
+      ),
+
+    expenseByCategory:
+      expenseByCategory.map(
+        (category) => ({
+          categoryId:
+            category.id,
+
+          categoryName:
+            category.name,
+
+          totalExpense:
+            category.total,
+        }),
+      ),
+
+    monthlyTrend:
+      monthlyTrend.map(
+        (month) => ({
+          month: month.month,
+
+          income:
+            month.income,
+
+          expense:
+            month.expense,
+        }),
+      ),
   };
 }

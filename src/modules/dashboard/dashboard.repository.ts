@@ -190,3 +190,55 @@ export async function getExpenseByCategory(userId: string) {
 
   return result.rows;
 }
+
+export async function getMonthlyTrend(userId: string) {
+  const result = await pool.query(
+    `
+    SELECT
+
+      TO_CHAR(
+        transaction_date,
+        'YYYY-MM'
+      ) as month,
+
+      COALESCE(
+
+      SUM(
+
+      CASE
+
+      WHEN transaction_type='income'
+
+      THEN amount
+
+      END
+
+      ),0) as income,
+
+      COALESCE(
+
+      SUM(
+
+      CASE
+
+      WHEN transaction_type='expense'
+
+      THEN amount
+
+      END
+
+      ),0) as expense
+
+    FROM transactions
+
+    WHERE user_id=$1
+
+    GROUP BY month
+
+    ORDER BY month
+    `,
+    [userId],
+  );
+
+  return result.rows;
+}
