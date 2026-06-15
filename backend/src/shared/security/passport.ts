@@ -5,6 +5,8 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { env } from "../../config/env.js";
 
 import * as userRepository from "../../modules/user/user.repository.js";
+import { sendEmail } from "../email/email.service.js";
+import { welcomeTemplate } from "../email/email.templates.js";
 
 passport.use(
   new GoogleStrategy(
@@ -89,6 +91,10 @@ passport.use(
 
             googleId,
           });
+
+        // Send welcome email (asynchronous, don't block response)
+        sendEmail(user.email, "Welcome to Personal Finance Tracker!", welcomeTemplate(user.name))
+          .catch(err => console.error("Failed to send welcome email:", err));
 
         return done(
           null,

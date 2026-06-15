@@ -4,6 +4,8 @@ import { convertToBaseCurrency } from "../../shared/currency/currency.service.js
 
 import * as categoryRepository from "../category/category.repository.js";
 import * as transactionRepository from "./transaction.repository.js";
+import { notifyBudgetExceeded } from "../budget/budget.notification.js";
+import * as budgetRepository from "../budget/budget.repository.js";
 
 import type { CreateTransactionDto } from "./dto/create-transaction.dto.js";
 import type { GetTransactionsDto } from "./dto/get-transactions.dto.js";
@@ -42,6 +44,17 @@ export async function createTransaction(
     exchangeRate,
     baseAmount,
   });
+
+  // Real-time budget notification check
+  if (transaction.transactionType === "expense" || transaction.transactionType === "refund") {
+    budgetRepository.getBudgetProgress(userId, transaction.categoryId || undefined)
+      .then(progressRows => {
+        if (progressRows && progressRows.length > 0) {
+          notifyBudgetExceeded(progressRows[0], userId);
+        }
+      })
+      .catch(err => console.error("Error checking real-time budget:", err));
+  }
 
   return {
     id: transaction.id,
@@ -207,6 +220,17 @@ export async function updateTransaction(
       baseAmount,
     },
   );
+
+  // Real-time budget notification check
+  if (updatedTransaction.transactionType === "expense" || updatedTransaction.transactionType === "refund") {
+    budgetRepository.getBudgetProgress(userId, updatedTransaction.categoryId || undefined)
+      .then(progressRows => {
+        if (progressRows && progressRows.length > 0) {
+          notifyBudgetExceeded(progressRows[0], userId);
+        }
+      })
+      .catch(err => console.error("Error checking real-time budget:", err));
+  }
 
   return {
     id: updatedTransaction.id,

@@ -296,23 +296,24 @@ export async function deleteBudget(budgetId: string): Promise<void> {
   );
 }
 
-export async function getBudgetProgress(userId: string) {
+export async function getBudgetProgress(userId: string, categoryId?: string) {
+  const conditions = ["b.user_id = $1"];
+  const values: any[] = [userId];
+
+  if (categoryId) {
+    conditions.push("c.id = $2");
+    values.push(categoryId);
+  }
+
   const result = await pool.query(
     `
     SELECT
-
-      b.id,
-
+      b.id AS budget_id,
       b.budget_period,
-
-      c.id as category_id,
-
-      c.name as category_name,
-
-      b.amount as budget,
-
+      c.id AS category_id,
+      c.name AS category_name,
+      b.amount AS budget,
       b.notification_sent,
-
       COALESCE(
         SUM(
           CASE
@@ -322,28 +323,15 @@ export async function getBudgetProgress(userId: string) {
           END
         ),
         0
-      ) as spent
-
+      ) AS spent
     FROM budgets b
-
-    JOIN categories c
-
-      ON c.id=b.category_id
-
+    JOIN categories c ON c.id = b.category_id
     LEFT JOIN transactions t
-
-      ON t.category_id=b.category_id
-
-      AND t.user_id=b.user_id
-
-      AND (t.transaction_type='expense' OR t.transaction_type='refund')
-
-      AND DATE_TRUNC('month',t.transaction_date)
-      =
-      DATE_TRUNC('month',b.budget_period)
-
-    WHERE b.user_id=$1
-
+      ON t.category_id = b.category_id
+      AND t.user_id = b.user_id
+      AND (t.transaction_type = 'expense' OR t.transaction_type = 'refund')
+      AND DATE_TRUNC('month', t.transaction_date) = DATE_TRUNC('month', b.budget_period)
+    WHERE ${conditions.join(" AND ")}
     GROUP BY
       b.id,
       c.id,
@@ -351,10 +339,9 @@ export async function getBudgetProgress(userId: string) {
       b.amount,
       b.notification_sent,
       b.budget_period
-
     ORDER BY c.name
     `,
-    [userId],
+    values,
   );
 
   return result.rows;

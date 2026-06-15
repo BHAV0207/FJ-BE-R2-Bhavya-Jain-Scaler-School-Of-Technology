@@ -6,6 +6,8 @@ import type { RegisterRequestDto } from "./dto/register-request.dto.js";
 import type { AuthResponseDto } from "./dto/auth-response.dto.js";
 import type { LoginRequestDto } from "./dto/login-request.dto.js";
 import { GenerateAccessToken } from "../../shared/security/token.service.js";
+import { sendEmail } from "../../shared/email/email.service.js";
+import { welcomeTemplate } from "../../shared/email/email.templates.js";
 
 
 export async function register(dto: RegisterRequestDto): Promise<AuthResponseDto> {
@@ -28,6 +30,10 @@ export async function register(dto: RegisterRequestDto): Promise<AuthResponseDto
 
   // Generate JWT
   const accessToken = GenerateAccessToken(user.id);
+
+  // Send welcome email (asynchronous, don't block response)
+  sendEmail(user.email, "Welcome to Personal Finance Tracker!", welcomeTemplate(user.name))
+    .catch(err => console.error("Failed to send welcome email:", err));
 
   return {
     accessToken,
