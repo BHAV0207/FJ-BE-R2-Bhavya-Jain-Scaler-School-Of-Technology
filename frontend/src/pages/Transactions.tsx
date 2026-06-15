@@ -395,9 +395,9 @@ const Transactions = () => {
                       <Eye size={18} /> Full View
                     </button>
                   ) : (
-                    <a href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${receipt.fileUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none', height: '44px', borderRadius: '12px' }}>
-                      <Eye size={18} /> Open PDF
-                    </a>
+                    <button onClick={() => setPreviewOpen(true)} className="btn btn-outline" style={{ justifyContent: 'center', height: '44px', borderRadius: '12px' }}>
+                      <Eye size={18} /> View PDF
+                    </button>
                   )}
                   <button className="btn btn-outline" onClick={handleReceiptDelete} style={{ justifyContent: 'center', color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)', height: '44px', borderRadius: '12px' }}>
                     <Trash size={18} /> Delete
@@ -448,15 +448,27 @@ const Transactions = () => {
             <X size={32} />
           </button>
           
-          <div style={{ maxWidth: '100%', maxHeight: '100%', position: 'relative' }} onClick={e => e.stopPropagation()}>
-            <img 
-              src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${receipt.fileUrl}`} 
-              alt="Receipt full preview" 
-              style={{ maxWidth: '100vw', maxHeight: '85vh', objectFit: 'contain', boxShadow: '0 24px 48px rgba(0,0,0,0.5)', borderRadius: '12px' }} 
-            />
-            <div style={{ position: 'absolute', bottom: '-48px', left: 0, right: 0, textAlign: 'center', color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>
-              {receipt.fileName}
-            </div>
+          <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={e => e.stopPropagation()}>
+            {receipt.mimeType.startsWith('image/') ? (
+              <div style={{ position: 'relative' }}>
+                <img 
+                  src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${receipt.fileUrl}`} 
+                  alt="Receipt full preview" 
+                  style={{ maxWidth: '100vw', maxHeight: '85vh', objectFit: 'contain', boxShadow: '0 24px 48px rgba(0,0,0,0.5)', borderRadius: '12px' }} 
+                />
+                <div style={{ position: 'absolute', bottom: '-48px', left: 0, right: 0, textAlign: 'center', color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>
+                  {receipt.fileName}
+                </div>
+              </div>
+            ) : (
+              <div style={{ width: '100%', height: '90%', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 24px 48px rgba(0,0,0,0.5)' }}>
+                <iframe 
+                  src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${receipt.fileUrl}`} 
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  title="PDF Receipt Preview"
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
