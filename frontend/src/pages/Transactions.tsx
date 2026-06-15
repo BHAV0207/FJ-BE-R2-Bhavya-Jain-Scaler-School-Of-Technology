@@ -59,6 +59,7 @@ const Transactions = () => {
   const [receiptError, setReceiptError] = useState('');
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const fetchCategories = async () => {
     try {
@@ -389,9 +390,15 @@ const Transactions = () => {
                   </div>
                 </div>
                 <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <a href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}${receipt.fileUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none', height: '44px', borderRadius: '12px' }}>
-                    <Eye size={18} /> Full View
-                  </a>
+                  {receipt.mimeType.startsWith('image/') ? (
+                    <button onClick={() => setPreviewOpen(true)} className="btn btn-outline" style={{ justifyContent: 'center', height: '44px', borderRadius: '12px' }}>
+                      <Eye size={18} /> Full View
+                    </button>
+                  ) : (
+                    <a href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${receipt.fileUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none', height: '44px', borderRadius: '12px' }}>
+                      <Eye size={18} /> Open PDF
+                    </a>
+                  )}
                   <button className="btn btn-outline" onClick={handleReceiptDelete} style={{ justifyContent: 'center', color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)', height: '44px', borderRadius: '12px' }}>
                     <Trash size={18} /> Delete
                   </button>
@@ -423,6 +430,33 @@ const Transactions = () => {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {/* Lightbox / Full Preview Modal */}
+      {previewOpen && receipt && (
+        <div 
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(20px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '40px' }}
+          onClick={() => setPreviewOpen(false)}
+        >
+          <button 
+            onClick={() => setPreviewOpen(false)} 
+            style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', padding: '12px', cursor: 'pointer', color: 'white', transition: 'background 0.2s', zIndex: 1001 }}
+            onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+            onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+          >
+            <X size={32} />
+          </button>
+          
+          <div style={{ maxWidth: '100%', maxHeight: '100%', position: 'relative' }} onClick={e => e.stopPropagation()}>
+            <img 
+              src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/${receipt.fileUrl}`} 
+              alt="Receipt full preview" 
+              style={{ maxWidth: '100vw', maxHeight: '85vh', objectFit: 'contain', boxShadow: '0 24px 48px rgba(0,0,0,0.5)', borderRadius: '12px' }} 
+            />
+            <div style={{ position: 'absolute', bottom: '-48px', left: 0, right: 0, textAlign: 'center', color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>
+              {receipt.fileName}
+            </div>
           </div>
         </div>
       )}

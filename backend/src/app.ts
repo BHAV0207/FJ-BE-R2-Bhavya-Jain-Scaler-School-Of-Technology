@@ -33,7 +33,7 @@ app.use("/api/v1/budgets", budgetRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/reports", reportsRoutes);
 app.use("/api/v1/categories", categoryRoutes);
-app.use("/api/v1/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/v1/receipts", receiptRoutes);
 
 //health check route

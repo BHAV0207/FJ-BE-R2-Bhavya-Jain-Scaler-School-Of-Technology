@@ -8,12 +8,14 @@ export async function sendEmail(
   subject: string,
   html: string,
 ): Promise<void> {
+  const text = html.replace(/<[^>]*>?/gm, ''); // Simple HTML to Text conversion
   try {
     await sgMail.send({
       to,
       from: env.EMAIL_FROM,
       subject,
       html,
+      text,
     });
     console.log(`✅ Email sent successfully to ${to}`);
   } catch (error: any) {
