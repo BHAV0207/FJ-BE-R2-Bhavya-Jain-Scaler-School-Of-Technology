@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { Plus, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Filter, Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -9,6 +9,20 @@ const Transactions = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
   const [type, setType] = useState('');
+  const [showAdd, setShowAdd] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [formData, setFormData] = useState({
+    amount: '',
+    category_id: '',
+    type: 'expense',
+    description: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  const fetchCategories = async () => {
+    const res = await api.get('/categories');
+    setCategories(res.data);
+  };
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -26,17 +40,82 @@ const Transactions = () => {
 
   useEffect(() => {
     fetchTransactions();
+    fetchCategories();
   }, [page, search, type]);
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.post('/transactions', {
+        ...formData,
+        amount: parseFloat(formData.amount)
+      });
+      setShowAdd(false);
+      setFormData({
+        amount: '',
+        category_id: '',
+        type: 'expense',
+        description: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+      fetchTransactions();
+    } catch (err) {
+      console.error('Error adding transaction', err);
+    }
+  };
 
   return (
     <div>
       <div className="flex justify-between mb-sm">
         <h1>Transactions</h1>
-        <button className="btn btn-primary">
+        <button className="btn btn-primary" onClick={() => setShowAdd(true)}>
           <Plus size={20} />
           <span>Add Transaction</span>
         </button>
       </div>
+
+      {showAdd && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+          <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+            <div className="flex justify-between mb-sm">
+              <h3>New Transaction</h3>
+              <button onClick={() => setShowAdd(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20}/></button>
+            </div>
+            <form onSubmit={handleAddSubmit}>
+              <div className="mb-sm">
+                <label className="text-muted">Amount</label>
+                <input type="number" step="0.01" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} required />
+              </div>
+              <div className="mb-sm">
+                <label className="text-muted">Type</label>
+                <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                  <option value="refund">Refund</option>
+                </select>
+              </div>
+              <div className="mb-sm">
+                <label className="text-muted">Category</label>
+                <select value={formData.category_id} onChange={(e) => setFormData({...formData, category_id: e.target.value})} required>
+                  <option value="">Select Category</option>
+                  {categories.map((c: any) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-sm">
+                <label className="text-muted">Description</label>
+                <input value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} required />
+              </div>
+              <div className="mb-sm">
+                <label className="text-muted">Date</label>
+                <input type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} required />
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '8px' }}>Save Transaction</button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <div className="card mb-sm flex" style={{ gap: '16px', padding: '12px' }}>
         <div style={{ position: 'relative', flex: 1 }}>

@@ -6,11 +6,9 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-
-// Placeholder components for other pages
-const Transactions = () => <div>Transactions Page</div>;
-const Categories = () => <div>Categories Page</div>;
-const Budgets = () => <div>Budgets Page</div>;
+import Transactions from './pages/Transactions';
+import Categories from './pages/Categories';
+import Budgets from './pages/Budgets';
 
 function App() {
   return (
