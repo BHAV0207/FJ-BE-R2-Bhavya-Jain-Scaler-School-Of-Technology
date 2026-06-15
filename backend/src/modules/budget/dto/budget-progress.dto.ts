@@ -12,4 +12,6 @@ export interface BudgetProgressDto {
   percentageUsed: number;
 
   isOverBudget: boolean;
+
+  notificationSent: boolean;
 }

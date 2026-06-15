@@ -12,6 +12,8 @@ export interface TransactionResponseDto {
   currency: SupportedCurrency;
 
   description: string | null;
+  
+  categoryName?: string;
 
   transactionDate: Date;
 }

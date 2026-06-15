@@ -210,6 +210,8 @@ export async function getBudgetProgress(
         budget === 0 ? 0 : Number(((spent / budget) * 100).toFixed(2)),
 
       isOverBudget: spent > budget,
+
+      notificationSent: row.notification_sent,
     };
   });
 }

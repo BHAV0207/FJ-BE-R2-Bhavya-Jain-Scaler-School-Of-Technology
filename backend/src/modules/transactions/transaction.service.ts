@@ -83,6 +83,8 @@ export async function getTransactions(
 
       description: transaction.description,
 
+      categoryName: (transaction as any).categoryName,
+
       transactionDate: transaction.transactionDate,
     })),
 
@@ -218,6 +220,8 @@ export async function updateTransaction(
     currency: updatedTransaction.currency,
 
     description: updatedTransaction.description,
+
+    categoryName: (updatedTransaction as any).categoryName,
 
     transactionDate: updatedTransaction.transactionDate,
   };

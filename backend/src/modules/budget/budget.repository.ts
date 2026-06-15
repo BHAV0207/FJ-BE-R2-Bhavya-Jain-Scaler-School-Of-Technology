@@ -309,6 +309,8 @@ export async function getBudgetProgress(userId: string) {
 
       b.amount as budget,
 
+      b.notification_sent,
+
       COALESCE(
         SUM(
           CASE
@@ -344,7 +346,8 @@ export async function getBudgetProgress(userId: string) {
       b.id,
       c.id,
       c.name,
-      b.amount
+      b.amount,
+      b.notification_sent
 
     ORDER BY c.name
     `,

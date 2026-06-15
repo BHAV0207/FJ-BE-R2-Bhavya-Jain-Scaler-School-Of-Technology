@@ -164,39 +164,38 @@ const sortColumnMap = {
 
   const result = await pool.query(
     `
-     SELECT
-id,
-user_id,
-category_id,
-amount,
-base_amount,
-exchange_rate,
-transaction_type,
-currency,
-description,
-transaction_date,
-created_at,
-updated_at
-
-      FROM transactions
-
-      WHERE ${whereClause}
-
-      ORDER BY ${orderBy} ${order}
-
+      SELECT
+        t.id,
+        t.user_id,
+        t.category_id,
+        t.amount,
+        t.base_amount,
+        t.exchange_rate,
+        t.transaction_type,
+        t.currency,
+        t.description,
+        t.transaction_date,
+        t.created_at,
+        t.updated_at,
+        c.name as category_name
+      FROM transactions t
+      JOIN categories c ON t.category_id = c.id
+      WHERE ${whereClause.replace(/user_id/g, 't.user_id').replace(/transaction_type/g, 't.transaction_type').replace(/category_id/g, 't.category_id').replace(/transaction_date/g, 't.transaction_date')}
+      ORDER BY t.${orderBy} ${order}
       LIMIT $${limitIndex}
-
       OFFSET $${offsetIndex}
     `,
     values,
   );
 
-  const transactions: TransactionEntity[] = result.rows.map((row) => ({
+  const transactions: any[] = result.rows.map((row) => ({
     id: row.id,
 
     userId: row.user_id,
 
     categoryId: row.category_id,
+
+    categoryName: row.category_name,
 
     amount: Number(row.amount),
 
@@ -228,33 +227,23 @@ export async function findTransactionById(
 ): Promise<TransactionEntity | null> {
   const result = await pool.query(
     `
-   SELECT
-
-id,
-
-user_id,
-
-category_id,
-
-amount,
-
-base_amount,
-
-exchange_rate,
-
-transaction_type,
-
-currency,
-
-description,
-
-transaction_date,
-
-created_at,
-
-updated_at
-    FROM transactions
-    WHERE id = $1
+    SELECT
+      t.id,
+      t.user_id,
+      t.category_id,
+      t.amount,
+      t.base_amount,
+      t.exchange_rate,
+      t.transaction_type,
+      t.currency,
+      t.description,
+      t.transaction_date,
+      t.created_at,
+      t.updated_at,
+      c.name as category_name
+    FROM transactions t
+    JOIN categories c ON t.category_id = c.id
+    WHERE t.id = $1
     `,
     [id],
   );

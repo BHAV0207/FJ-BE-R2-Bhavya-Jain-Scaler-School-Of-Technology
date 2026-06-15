@@ -93,7 +93,7 @@ export async function createUser(dto: CreateUserDto): Promise<User> {
 export async function getById(id: string): Promise<User | null> {
   const result = await pool.query(
     `
-      SELECT id,name,email,password_hash,created_at,updated_at
+      SELECT id, name, email, password_hash, provider, google_id, preferred_currency, created_at, updated_at
       FROM users 
       WHERE id = $1;
     `,
