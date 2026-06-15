@@ -308,7 +308,7 @@ export async function getBudgetProgress(userId: string, categoryId?: string) {
   const result = await pool.query(
     `
     SELECT
-      b.id AS budget_id,
+      b.id,
       b.budget_period,
       c.id AS category_id,
       c.name AS category_name,

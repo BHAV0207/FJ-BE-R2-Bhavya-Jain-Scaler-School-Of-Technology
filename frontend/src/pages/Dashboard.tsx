@@ -77,7 +77,7 @@ const Dashboard = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }}>
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, marginBottom: '24px' }}>Weekly Performance</h3>
-            <div style={{ height: 260 }}>
+            <div style={{ height: '260px', minHeight: '260px', position: 'relative' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
