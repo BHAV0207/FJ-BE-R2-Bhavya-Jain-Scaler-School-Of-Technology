@@ -1,4 +1,7 @@
 import * as dashboardRepository from "./dashboard.repository.js";
+import * as userRepository from "../user/user.repository.js";
+import { convertFromBaseCurrency } from "../../shared/currency/currency.service.js";
+import type { SupportedCurrency } from "../../shared/currency/currencies.js";
 
 import type {
   DashboardResponseDto,
@@ -14,13 +17,17 @@ export async function getDashboard(
   userId: string,
 ): Promise<DashboardResponseDto> {
   const [
+    user,
     summary,
     monthlyBudget,
     budgetUsed,
     recentTransactions,
     expenseByCategory,
     monthlyTrend,
+    weeklyTrend,
   ] = await Promise.all([
+    userRepository.getById(userId),
+
     dashboardRepository.getDashboardSummary(userId),
 
     dashboardRepository.getMonthlyBudget(userId),
@@ -32,26 +39,35 @@ export async function getDashboard(
     dashboardRepository.getExpenseByCategory(userId),
 
     dashboardRepository.getMonthlyTrend(userId),
+
+    dashboardRepository.getWeeklyTrend(userId),
   ]);
 
-  const totalIncome = toNumber(
-    summary.total_income,
+  const preferredCurrency = (user?.preferredCurrency as SupportedCurrency) || "INR";
+
+  const totalIncome = convertFromBaseCurrency(
+    toNumber(summary.total_income),
+    preferredCurrency
   );
 
-  const totalExpense = toNumber(
-    summary.total_expense,
+  const totalExpense = convertFromBaseCurrency(
+    toNumber(summary.total_expense),
+    preferredCurrency
   );
 
-  const totalRefund = toNumber(
-    summary.total_refund,
+  const totalRefund = convertFromBaseCurrency(
+    toNumber(summary.total_refund),
+    preferredCurrency
   );
 
-  const budget = toNumber(
-    monthlyBudget.monthly_budget,
+  const budget = convertFromBaseCurrency(
+    toNumber(monthlyBudget.monthly_budget),
+    preferredCurrency
   );
 
-  const spent = toNumber(
-    budgetUsed.budget_used,
+  const spent = convertFromBaseCurrency(
+    toNumber(budgetUsed.budget_used),
+    preferredCurrency
   );
 
   const netSavings =
@@ -120,7 +136,7 @@ export async function getDashboard(
 
     recentTransactions:
       recentTransactions.map(
-        (transaction) => ({
+        (transaction: any) => ({
           id: transaction.id,
 
           amount:
@@ -142,7 +158,7 @@ export async function getDashboard(
 
     expenseByCategory:
       expenseByCategory.map(
-        (category) => ({
+        (category: any) => ({
           categoryId:
             category.id,
 
@@ -150,21 +166,30 @@ export async function getDashboard(
             category.name,
 
           totalExpense:
-            category.total,
+            convertFromBaseCurrency(toNumber(category.total), preferredCurrency).toFixed(2),
         }),
       ),
 
     monthlyTrend:
       monthlyTrend.map(
-        (month) => ({
+        (month: any) => ({
           month: month.month,
 
           income:
-            month.income,
+            convertFromBaseCurrency(toNumber(month.income), preferredCurrency).toFixed(2),
 
           expense:
-            month.expense,
+            convertFromBaseCurrency(toNumber(month.expense), preferredCurrency).toFixed(2),
         }),
       ),
-  };
+
+    weeklyTrend:
+      weeklyTrend.map(
+        (week: any) => ({
+          name: week.name,
+          income: convertFromBaseCurrency(week.income, preferredCurrency),
+          expense: convertFromBaseCurrency(week.expense, preferredCurrency),
+        })
+      ),
+  } as any;
 }

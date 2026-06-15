@@ -30,7 +30,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
 app.use("/api/v1/budgets", budgetRoutes);
-app.use("/dashboard", dashboardRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/reports", reportsRoutes);
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/uploads", express.static(path.join(process.cwd(), "uploads")));

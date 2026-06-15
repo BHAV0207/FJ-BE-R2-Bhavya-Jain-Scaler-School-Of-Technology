@@ -3,6 +3,10 @@ export const SUPPORTED_CURRENCIES = [
   "USD",
   "EUR",
   "GBP",
+  "CAD",
+  "AUD",
+  "JPY",
+  "CNY",
 ] as const;
 
 export type SupportedCurrency =

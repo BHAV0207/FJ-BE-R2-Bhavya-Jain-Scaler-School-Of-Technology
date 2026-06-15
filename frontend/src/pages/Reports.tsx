@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import api from '../api';
+import { useAuth } from '../context/AuthContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { formatAmount, getCurrencySymbol } from '../utils/currency';
 
 interface ReportData {
   expenseByCategory: { categoryName: string; totalAmount: string }[];
@@ -10,6 +12,8 @@ interface ReportData {
 const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 const Reports = () => {
+  const { user } = useAuth();
+  const currency = user?.preferredCurrency ?? 'USD';
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +22,7 @@ const Reports = () => {
       .then(res => setData(res.data.data))
       .catch(err => console.error('Reports fetch error', err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [user?.preferredCurrency]);
 
   if (loading) return <div style={{ padding: '64px', textAlign: 'center' }}><div className="loading-spinner"></div></div>;
 
@@ -56,6 +60,7 @@ const Reports = () => {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ border: 'none', borderRadius: '8px', boxShadow: 'var(--shadow-lg)' }}
+                  formatter={(value: number) => [formatAmount(value, currency), 'Total']}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -65,7 +70,7 @@ const Reports = () => {
               <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: COLORS[index % COLORS.length] }}></div>
                 <span style={{ color: 'var(--text-secondary)' }}>{item.name}</span>
-                <span style={{ fontWeight: 600 }}>${item.value.toLocaleString()}</span>
+                <span style={{ fontWeight: 600 }}>{formatAmount(item.value, currency)}</span>
               </div>
             ))}
           </div>
@@ -78,11 +83,13 @@ const Reports = () => {
               <BarChart data={data?.monthlyTrend}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} tickFormatter={(v) => `${getCurrencySymbol(currency)}${v.toLocaleString()}`} />
                 <Tooltip 
                   cursor={{ fill: 'var(--bg-secondary)' }}
                   contentStyle={{ border: 'none', borderRadius: '8px', boxShadow: 'var(--shadow-lg)' }}
+                  formatter={(value: number) => [formatAmount(value, currency), '']}
                 />
+                <Legend />
                 <Bar dataKey="income" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={20} />
                 <Bar dataKey="expense" fill="var(--danger)" radius={[4, 4, 0, 0]} barSize={20} />
               </BarChart>

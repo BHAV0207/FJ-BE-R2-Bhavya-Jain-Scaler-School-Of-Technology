@@ -2,6 +2,9 @@ import { AppError } from "../../shared/errors/AppErrors.js";
 
 import * as budgetRepository from "./budget.repository.js";
 import * as categoryRepository from "../category/category.repository.js";
+import * as userRepository from "../user/user.repository.js";
+import { convertToBaseCurrency, convertFromBaseCurrency } from "../../shared/currency/currency.service.js";
+import type { SupportedCurrency } from "../../shared/currency/currencies.js";
 
 import type { CreateBudgetDto } from "./dto/create-budget.dto.js";
 import type { UpdateBudgetDto } from "./dto/update-budget.dto.js";
@@ -15,6 +18,18 @@ export async function createBudget(
   userId: string,
   dto: CreateBudgetDto,
 ): Promise<BudgetResponseDto> {
+  const user = await userRepository.getById(userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  // Convert amount from preferred currency to base currency before saving
+  const { baseAmount } = convertToBaseCurrency(
+    dto.amount,
+    user.preferredCurrency as SupportedCurrency
+  );
+  dto.amount = baseAmount;
+
   const category = await categoryRepository.findById(dto.categoryId);
 
   if (!category) {
@@ -46,13 +61,16 @@ export async function createBudget(
     );
   }
 
-  const budget = await budgetRepository.createBudget(userId, dto);
+  const budgetResponse = await budgetRepository.createBudget(userId, dto);
 
   return {
-    id: budget.id,
-    categoryId: budget.categoryId,
-    amount: budget.amount,
-    budgetPeriod: budget.budgetPeriod,
+    id: budgetResponse.id,
+    categoryId: budgetResponse.categoryId,
+    amount: convertFromBaseCurrency(
+      Number(budgetResponse.amount),
+      user.preferredCurrency as SupportedCurrency
+    ).toFixed(2),
+    budgetPeriod: budgetResponse.budgetPeriod,
   };
 }
 
@@ -60,22 +78,28 @@ export async function getBudgets(
   userId: string,
   dto: GetBudgetsDto,
 ): Promise<GetBudgetsResponseDto> {
+  const user = await userRepository.getById(userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
   const { budgets, total } = await budgetRepository.findBudgets(userId, dto);
 
+  const convertedBudgets = budgets.map((budget) => ({
+    id: budget.id,
+    categoryId: budget.categoryId,
+    amount: convertFromBaseCurrency(
+      Number(budget.amount),
+      user.preferredCurrency as SupportedCurrency
+    ).toFixed(2),
+    budgetPeriod: budget.budgetPeriod,
+  }));
+
   return {
-    budgets: budgets.map((budget) => ({
-      id: budget.id,
-      categoryId: budget.categoryId,
-      amount: budget.amount,
-      budgetPeriod: budget.budgetPeriod,
-    })),
-
+    budgets: convertedBudgets,
     page: dto.page,
-
     limit: dto.limit,
-
     total,
-
     totalPages: Math.ceil(total / dto.limit),
   };
 }
@@ -84,6 +108,11 @@ export async function getBudgetById(
   userId: string,
   budgetId: string,
 ): Promise<BudgetResponseDto> {
+  const user = await userRepository.getById(userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
   const budget = await budgetRepository.findBudgetById(budgetId);
 
   if (!budget) {
@@ -97,7 +126,10 @@ export async function getBudgetById(
   return {
     id: budget.id,
     categoryId: budget.categoryId,
-    amount: budget.amount,
+    amount: convertFromBaseCurrency(
+      Number(budget.amount),
+      user.preferredCurrency as SupportedCurrency
+    ).toFixed(2),
     budgetPeriod: budget.budgetPeriod,
   };
 }
@@ -156,12 +188,28 @@ export async function updateBudget(
     );
   }
 
+  const user = await userRepository.getById(userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  if (dto.amount !== undefined) {
+    const { baseAmount } = convertToBaseCurrency(
+      dto.amount,
+      user.preferredCurrency as SupportedCurrency
+    );
+    dto.amount = baseAmount;
+  }
+
   const updated = await budgetRepository.updateBudget(budgetId, dto);
 
   return {
     id: updated.id,
     categoryId: updated.categoryId,
-    amount: updated.amount,
+    amount: convertFromBaseCurrency(
+      Number(updated.amount),
+      user.preferredCurrency as SupportedCurrency
+    ).toFixed(2),
     budgetPeriod: updated.budgetPeriod,
   };
 }
@@ -186,31 +234,39 @@ export async function deleteBudget(
 export async function getBudgetProgress(
   userId: string,
 ): Promise<BudgetProgressDto[]> {
+  const user = await userRepository.getById(userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
   const rows = await budgetRepository.getBudgetProgress(userId);
 
   return rows.map((row) => {
-    const budget = Number(row.budget);
+    const budgetBase = Number(row.budget);
+    const spentBase = Number(row.spent);
 
-    const spent = Number(row.spent);
-
+    // Convert from base currency to preferred currency
+    const budget = convertFromBaseCurrency(
+      budgetBase,
+      user.preferredCurrency as SupportedCurrency
+    );
+    const spent = convertFromBaseCurrency(
+      spentBase,
+      user.preferredCurrency as SupportedCurrency
+    );
     const remaining = budget - spent;
 
     return {
+      id: row.id,
       categoryId: row.category_id,
-
       categoryName: row.category_name,
-
-      budget: budget.toFixed(2),
-
+      amount: budget.toFixed(2),
+      budgetPeriod: row.budget_period,
       spent: spent.toFixed(2),
-
       remaining: remaining.toFixed(2),
-
       percentageUsed:
         budget === 0 ? 0 : Number(((spent / budget) * 100).toFixed(2)),
-
       isOverBudget: spent > budget,
-
       notificationSent: row.notification_sent,
     };
   });

@@ -6,6 +6,7 @@ import { authenticate } from "../../shared/security/auth.middleware.js";
 
 const router = Router();
 
+router.get("/", authenticate, reportsController.getFullReport);
 router.get("/summary", authenticate, reportsController.getSummary);
 
 router.get(

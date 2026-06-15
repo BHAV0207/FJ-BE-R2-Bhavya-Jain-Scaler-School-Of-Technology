@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { Trash2, Pencil, X, Bell, AlertTriangle, Plus, Target, DollarSign, Calendar } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { formatAmount, getCurrencySymbol } from '../utils/currency';
+import { Trash2, Pencil, X, Bell, AlertTriangle, Plus, Target, Calendar } from 'lucide-react';
 
 interface Category { id: string; name: string; type: string; }
 interface Budget {
@@ -23,6 +25,8 @@ const emptyForm = {
 };
 
 const Budgets = () => {
+  const { user } = useAuth();
+  const currency = user?.preferredCurrency ?? 'USD';
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +49,7 @@ const Budgets = () => {
     } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [user?.preferredCurrency]);
 
   const openCreate = () => { setEditId(null); setFormData(emptyForm); setFormError(''); setShowModal(true); };
 
@@ -156,7 +160,7 @@ const Budgets = () => {
                   <div style={{ marginBottom: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.875rem' }}>
                       <span style={{ fontWeight: 600, color: statusColor }}>{Math.round(pct)}% Used</span>
-                      <span style={{ color: 'var(--text-secondary)' }}>Limit: ${parseFloat(b.amount).toLocaleString()}</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Limit: {formatAmount(b.amount, currency)}</span>
                     </div>
                     <div style={{ height: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '5px', overflow: 'hidden' }}>
                       <div style={{ 
@@ -172,12 +176,12 @@ const Budgets = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', fontSize: '0.8125rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Spent</span>
-                      <span style={{ fontWeight: 700 }}>${parseFloat(b.spent).toLocaleString()}</span>
+                      <span style={{ fontWeight: 700 }}>{formatAmount(b.spent, currency)}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                       <span style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Remaining</span>
                       <span style={{ fontWeight: 700, color: over ? 'var(--danger)' : 'var(--accent)' }}>
-                        {over ? '-' : ''}${Math.abs(parseFloat(b.remaining)).toLocaleString()}
+                        {over ? '-' : ''}{formatAmount(Math.abs(parseFloat(b.remaining)), currency)}
                       </span>
                     </div>
                   </div>
@@ -196,7 +200,7 @@ const Budgets = () => {
                       fontWeight: 600
                     }}>
                       <AlertTriangle size={14} />
-                      Budget exceeded by ${Math.abs(parseFloat(b.remaining)).toLocaleString()}
+                      Budget exceeded by {formatAmount(Math.abs(parseFloat(b.remaining)), currency)}
                     </div>
                   )}
                 </div>
@@ -231,9 +235,9 @@ const Budgets = () => {
                 </div>
               </div>
               <div className="form-group" style={{ marginBottom: '20px' }}>
-                <label>Monthly Limit</label>
+                <label>Monthly Limit ({getCurrencySymbol(currency)})</label>
                 <div style={{ position: 'relative' }}>
-                  <DollarSign size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                  <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', fontSize: '1rem', fontWeight: 600 }}>{getCurrencySymbol(currency)}</span>
                   <input 
                     type="number" 
                     step="0.01" 

@@ -54,3 +54,19 @@ export async function getMonthlyReport(
     return next(error);
   }
 }
+export async function getFullReport(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const response = await reportsService.getFullReport(req.user!.id);
+
+    return res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}

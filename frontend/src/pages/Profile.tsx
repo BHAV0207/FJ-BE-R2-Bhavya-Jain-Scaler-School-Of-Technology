@@ -35,10 +35,16 @@ const Profile = () => {
     setSaving(true);
     setMessage({ type: '', text: '' });
     try {
-      const res = await api.put('/users/profile', formData);
-      setProfile(res.data.data);
-      // Update local storage/context if name changed
-      login(localStorage.getItem('accessToken')!, res.data.data);
+      const res = await api.put('/users/me', formData);
+      const updatedUser = res.data.data;
+      setProfile(updatedUser);
+      
+      // Get current token correctly
+      const token = localStorage.getItem('token');
+      if (token) {
+        login(token, updatedUser);
+      }
+      
       setMessage({ type: 'success', text: 'Profile updated successfully' });
     } catch (err: any) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Update failed' });

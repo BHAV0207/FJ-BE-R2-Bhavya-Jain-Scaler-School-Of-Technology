@@ -5,7 +5,7 @@ import { AppError } from "../../shared/errors/AppErrors.js";
 
 export async function getAllCategories(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = (req.user as any).userId;
+    const userId = (req.user as any).id;
     const categories = await categoryService.getAllCategories(userId);
     return res.status(200).json({
       success: true,
@@ -18,7 +18,7 @@ export async function getAllCategories(req: Request, res: Response, next: NextFu
 
 export async function createCategory(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = (req.user as any).userId;
+    const userId = (req.user as any).id;
     const data = createCategorySchema.parse(req.body);
     const category = await categoryService.createCategory(userId, data);
     return res.status(201).json({
@@ -32,7 +32,7 @@ export async function createCategory(req: Request, res: Response, next: NextFunc
 
 export async function updateCategory(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = (req.user as any).userId;
+    const userId = (req.user as any).id;
     const id = req.params.id as string;
     const data = updateCategorySchema.parse(req.body);
     const category = await categoryService.updateCategory(id, userId, data);
@@ -47,7 +47,7 @@ export async function updateCategory(req: Request, res: Response, next: NextFunc
 
 export async function deleteCategory(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = (req.user as any).userId;
+    const userId = (req.user as any).id;
     const id = req.params.id as string;
     await categoryService.deleteCategory(id, userId);
     return res.status(200).json({

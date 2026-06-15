@@ -1,24 +1,36 @@
 import * as reportsRepository from "./reports.repository.js";
+import * as userRepository from "../user/user.repository.js";
+import { convertFromBaseCurrency } from "../../shared/currency/currency.service.js";
+import type { SupportedCurrency } from "../../shared/currency/currencies.js";
+
+async function getPreferredCurrency(userId: string): Promise<SupportedCurrency> {
+  const user = await userRepository.getById(userId);
+  return (user?.preferredCurrency as SupportedCurrency) || "INR";
+}
 
 export async function getSummary(
   userId: string,
 ) {
-  const summary =
-    await reportsRepository.getSummary(
-      userId,
-    );
+  const [summary, preferredCurrency] = await Promise.all([
+    reportsRepository.getSummary(userId),
+    getPreferredCurrency(userId)
+  ]);
 
+  const totalIncome = convertFromBaseCurrency(Number(summary.total_income), preferredCurrency);
+  const totalExpense = convertFromBaseCurrency(Number(summary.total_expense), preferredCurrency);
+  const totalRefund = convertFromBaseCurrency(Number(summary.total_refund), preferredCurrency);
+  
   return {
-    totalIncome: summary.total_income,
+    totalIncome: totalIncome.toFixed(2),
 
-    totalExpense: summary.total_expense,
+    totalExpense: totalExpense.toFixed(2),
 
-    totalRefund: summary.total_refund,
+    totalRefund: totalRefund.toFixed(2),
 
     netSavings: (
-      Number(summary.total_income) -
-      Number(summary.total_expense) +
-      Number(summary.total_refund)
+      totalIncome -
+      totalExpense +
+      totalRefund
     ).toFixed(2),
   };
 }
@@ -26,33 +38,49 @@ export async function getSummary(
 export async function getCategoryWiseReport(
   userId: string,
 ) {
-  const rows =
-    await reportsRepository.getCategoryWiseReport(
-      userId,
-    );
+  const [rows, preferredCurrency] = await Promise.all([
+    reportsRepository.getCategoryWiseReport(userId),
+    getPreferredCurrency(userId)
+  ]);
 
   return rows.map((row) => ({
     categoryName: row.name,
 
-    totalExpense: row.total,
+    totalAmount: convertFromBaseCurrency(Number(row.total), preferredCurrency).toFixed(2),
   }));
 }
 
 export async function getMonthlyReport(
   userId: string,
 ) {
-  const rows =
-    await reportsRepository.getMonthlyReport(
-      userId,
-    );
+  const [rows, preferredCurrency] = await Promise.all([
+    reportsRepository.getMonthlyReport(userId),
+    getPreferredCurrency(userId)
+  ]);
 
   return rows.map((row) => ({
     month: row.month,
 
-    income: row.income,
+    income: convertFromBaseCurrency(Number(row.income), preferredCurrency).toFixed(2),
 
-    expense: row.expense,
+    expense: convertFromBaseCurrency(Number(row.expense), preferredCurrency).toFixed(2),
 
-    refund: row.refund,
+    refund: convertFromBaseCurrency(Number(row.refund), preferredCurrency).toFixed(2),
   }));
+}
+
+export async function getFullReport(
+  userId: string,
+) {
+  const [summary, categoryWise, monthly] = await Promise.all([
+    getSummary(userId),
+    getCategoryWiseReport(userId),
+    getMonthlyReport(userId),
+  ]);
+
+  return {
+    summary,
+    expenseByCategory: categoryWise,
+    monthlyTrend: monthly,
+  };
 }

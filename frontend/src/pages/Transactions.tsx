@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { Plus, Search, ChevronLeft, ChevronRight, X, Pencil, Trash2, Paperclip, Upload, Eye, Trash, Filter, Download } from 'lucide-react';
+import { CURRENCY_SYMBOLS, getCurrencySymbol } from '../utils/currency';
 
 interface Transaction {
   id: string;
@@ -38,11 +39,6 @@ const emptyForm = {
   transactionDate: new Date().toISOString().split('T')[0],
 };
 
-const CURRENCY_SYMBOLS: Record<string, string> = {
-  USD: '$', EUR: '€', GBP: '£', INR: '₹', CAD: 'C$', AUD: 'A$', JPY: '¥', CNY: '¥',
-};
-
-const getCurrencySymbol = (code: string) => CURRENCY_SYMBOLS[code] || code;
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);

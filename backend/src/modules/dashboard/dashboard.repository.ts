@@ -223,3 +223,48 @@ export async function getMonthlyTrend(userId: string) {
 
   return result.rows;
 }
+
+export async function getWeeklyTrend(userId: string) {
+  const result = await pool.query(
+    `
+    SELECT
+      DATE_TRUNC('week', transaction_date) AS week,
+      COALESCE(
+        SUM(
+          CASE
+            WHEN transaction_type = 'income'
+            THEN base_amount
+          END
+        ),
+        0
+      ) AS income,
+      COALESCE(
+        SUM(
+          CASE
+            WHEN transaction_type = 'expense'
+            THEN base_amount
+          END
+        ),
+        0
+      ) AS expense
+    FROM transactions
+    WHERE 
+      user_id = $1
+      AND transaction_date >= CURRENT_DATE - INTERVAL '28 days'
+    GROUP BY week
+    ORDER BY week ASC
+    `,
+    [userId],
+  );
+
+  return result.rows.map(row => ({
+    name: 'W' + Math.ceil((new Date().getTime() - new Date(row.week).getTime()) / (7 * 24 * 60 * 60 * 1000)),
+    income: Number(row.income),
+    expense: Number(row.expense),
+    week: row.week
+  })).reverse() // Reversing to show W1, W2, W3, W4 where W1 is oldest in the 4 week period
+  .map((item, index) => ({
+    ...item,
+    name: 'W' + (index + 1)
+  }));
+}

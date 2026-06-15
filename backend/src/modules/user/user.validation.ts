@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SUPPORTED_CURRENCIES } from "../../shared/currency/currencies.js";
 
 export const updateUserSchema = z
   .object({
@@ -10,9 +11,9 @@ export const updateUserSchema = z
       .transform((email) => email.toLowerCase())
       .optional(),
       
-    preferredCurrency: z.enum(["INR", "USD", "EUR", "GBP"]).optional(),
+    preferredCurrency: z.enum(SUPPORTED_CURRENCIES).optional(),
   })
-  .refine((data) => data.name !== undefined || data.email !== undefined, {
+  .refine((data) => data.name !== undefined || data.email !== undefined || data.preferredCurrency !== undefined, {
     message: "At least one field must be provided",
   });
 

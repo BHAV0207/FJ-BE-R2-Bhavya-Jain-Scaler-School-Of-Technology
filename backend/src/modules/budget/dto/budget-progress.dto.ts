@@ -1,9 +1,13 @@
 export interface BudgetProgressDto {
+  id: string;
+
   categoryId: string;
 
   categoryName: string;
 
-  budget: string;
+  amount: string;
+
+  budgetPeriod: Date;
 
   spent: string;
 

@@ -303,6 +303,8 @@ export async function getBudgetProgress(userId: string) {
 
       b.id,
 
+      b.budget_period,
+
       c.id as category_id,
 
       c.name as category_name,
@@ -347,7 +349,8 @@ export async function getBudgetProgress(userId: string) {
       c.id,
       c.name,
       b.amount,
-      b.notification_sent
+      b.notification_sent,
+      b.budget_period
 
     ORDER BY c.name
     `,

@@ -6,9 +6,17 @@ export const EXCHANGE_RATES: Record<
 > = {
   INR: 1,
 
-  USD: 83.5,
+  USD: 83.52,
 
-  EUR: 91.2,
+  EUR: 95.31,
 
-  GBP: 106.4,
+  GBP: 111.24,
+
+  CAD: 61.23,
+
+  AUD: 55.45,
+
+  JPY: 0.53,
+
+  CNY: 11.51,
 };
