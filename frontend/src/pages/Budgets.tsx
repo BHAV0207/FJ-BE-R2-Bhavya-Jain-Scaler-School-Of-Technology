@@ -135,8 +135,10 @@ const Budgets = () => {
               return (
                 <div key={b.id} className="card glass" style={{ 
                   padding: '24px', 
-                  border: over ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid var(--glass-border)',
+                  border: over ? '1px solid #fee2e2' : '1px solid var(--border)',
+                  boxShadow: over ? '0 10px 15px -3px rgba(239, 68, 68, 0.1)' : 'var(--shadow-md)',
                   transition: 'transform 0.2s',
+                  background: 'var(--surface)'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                     <div>
@@ -148,7 +150,7 @@ const Budgets = () => {
                       </div>
                     </div>
                     <div className="flex" style={{ gap: '8px' }}>
-                      <button onClick={() => openEdit(b)} style={{ border: 'none', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', cursor: 'pointer', padding: '8px', display: 'flex' }} title="Edit">
+                      <button onClick={() => openEdit(b)} style={{ border: 'none', background: 'var(--bg-secondary)', borderRadius: '8px', cursor: 'pointer', padding: '8px', display: 'flex' }} title="Edit">
                         <Pencil size={14} color="var(--text-secondary)" />
                       </button>
                       <button onClick={() => handleDelete(b.id)} style={{ border: 'none', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', cursor: 'pointer', padding: '8px', display: 'flex' }} title="Delete">
@@ -162,7 +164,7 @@ const Budgets = () => {
                       <span style={{ fontWeight: 600, color: statusColor }}>{Math.round(pct)}% Used</span>
                       <span style={{ color: 'var(--text-secondary)' }}>Limit: {formatAmount(b.amount, currency)}</span>
                     </div>
-                    <div style={{ height: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '5px', overflow: 'hidden' }}>
+                    <div style={{ height: '10px', background: 'var(--bg-secondary)', borderRadius: '5px', overflow: 'hidden' }}>
                       <div style={{ 
                         height: '100%', 
                         width: `${Math.min(100, pct)}%`, 
@@ -173,7 +175,7 @@ const Budgets = () => {
                     </div>
                   </div>
                   
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', fontSize: '0.8125rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'var(--bg-secondary)', borderRadius: '12px', fontSize: '0.8125rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ color: 'var(--text-secondary)', marginBottom: '2px' }}>Spent</span>
                       <span style={{ fontWeight: 700 }}>{formatAmount(b.spent, currency)}</span>

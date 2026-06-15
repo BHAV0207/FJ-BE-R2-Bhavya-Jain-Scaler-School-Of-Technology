@@ -40,8 +40,8 @@ const Dashboard = () => {
   if (loading) return <div style={{ padding: '64px', textAlign: 'center' }}><div className="loading-spinner"></div></div>;
 
   const stats = [
-    { label: 'Total Balance', value: formatAmount(data?.summary?.netSavings || '0', currency), icon: <Wallet size={18} />, color: 'var(--primary)', bg: 'rgba(79, 70, 229, 0.05)' },
-    { label: 'Total Income', value: formatAmount(data?.summary?.totalIncome || '0', currency), icon: <ArrowUpCircle size={18} />, color: 'var(--accent)', bg: 'rgba(16, 185, 129, 0.05)' },
+    { label: 'Total Balance', value: formatAmount(data?.summary?.netSavings || '0', currency), icon: <Wallet size={18} />, color: 'var(--primary)', bg: 'rgba(16, 185, 129, 0.1)' },
+    { label: 'Total Income', value: formatAmount(data?.summary?.totalIncome || '0', currency), icon: <ArrowUpCircle size={18} />, color: 'var(--primary)', bg: 'rgba(16, 185, 129, 0.1)' },
     { label: 'Total Expense', value: formatAmount(data?.summary?.totalExpense || '0', currency), icon: <ArrowDownCircle size={18} />, color: 'var(--danger)', bg: 'rgba(239, 68, 68, 0.05)' },
   ];
 
@@ -61,7 +61,7 @@ const Dashboard = () => {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '32px' }}>
         {stats.map((s, i) => (
-          <div key={i} style={{ padding: '20px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+          <div key={i} style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <div style={{ color: s.color, background: s.bg, padding: '6px', borderRadius: '6px', display: 'flex' }}>
                 {s.icon}
@@ -75,7 +75,7 @@ const Dashboard = () => {
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }}>
             <h3 style={{ fontSize: '0.875rem', fontWeight: 700, marginBottom: '24px' }}>Weekly Performance</h3>
             <div style={{ height: 260 }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -95,7 +95,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)' }}>
             <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontSize: '0.875rem', fontWeight: 700 }}>Recent Transactions</h3>
               <Link to="/transactions" style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--primary)', textDecoration: 'none' }}>View All</Link>
@@ -113,7 +113,7 @@ const Dashboard = () => {
                       <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{t.description}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{new Date(t.transactionDate).toLocaleDateString()}</div>
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: '0.875rem', color: t.transactionType === 'income' ? 'var(--accent)' : 'var(--text-primary)' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.875rem', color: t.transactionType === 'income' ? 'var(--primary)' : 'var(--text-primary)' }}>
                       {t.transactionType === 'income' ? '+' : '-'}{formatAmount(t.amount, t.currency || currency)}
                     </div>
                   </div>
@@ -124,12 +124,12 @@ const Dashboard = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ padding: '24px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '24px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-sm)' }}>
             <h3 style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '12px' }}>Monthly Budget</h3>
             <div style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '8px' }}>
               {formatAmount(data?.budget?.budgetUsed || '0', currency)} <span style={{ fontSize: '0.875rem', fontWeight: 400, color: 'var(--text-secondary)' }}>/ {formatAmount(data?.budget?.monthlyBudget || '0', currency)}</span>
             </div>
-            <div style={{ height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden', marginBottom: '16px' }}>
+            <div style={{ height: '4px', background: '#dcfce7', borderRadius: '2px', overflow: 'hidden', marginBottom: '16px' }}>
               <div style={{ 
                 height: '100%', 
                 width: `${Math.min(100, (data?.budget?.budgetPercentage || 0))}%`, 
@@ -141,7 +141,7 @@ const Dashboard = () => {
             </Link>
           </div>
 
-          <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }}>
             <h3 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '16px', color: 'var(--text-secondary)' }}>Quick Actions</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <Link to="/transactions" className="btn btn-outline" style={{ justifyContent: 'center', fontSize: '0.75rem' }}>Add Transaction</Link>

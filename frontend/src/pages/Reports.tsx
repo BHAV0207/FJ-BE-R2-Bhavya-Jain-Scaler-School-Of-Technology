@@ -9,7 +9,7 @@ interface ReportData {
   monthlyTrend: { month: string; income: number; expense: number }[];
 }
 
-const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+const COLORS = ['#10b981', '#34d399', '#f59e0b', '#ef4444', '#059669', '#14b8a6'];
 
 const Reports = () => {
   const { user } = useAuth();
@@ -39,7 +39,7 @@ const Reports = () => {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px', marginBottom: '24px' }}>
-        <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+        <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }}>
           <h3 style={{ fontSize: '0.875rem', fontWeight: 700, marginBottom: '24px' }}>Expenses by Category</h3>
           <div style={{ height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -76,8 +76,8 @@ const Reports = () => {
           </div>
         </div>
 
-        <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
-          <h3 style={{ fontSize: '0.875rem', fontWeight: 700, marginBottom: '24px' }}>Monthly Comparison</h3>
+          <div style={{ padding: '24px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }}>
+            <h3 style={{ fontSize: '0.875rem', fontWeight: 700, marginBottom: '24px' }}>Monthly Comparison</h3>
           <div style={{ height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data?.monthlyTrend}>

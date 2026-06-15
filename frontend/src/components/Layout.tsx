@@ -22,12 +22,14 @@ const Layout = () => {
 
   return (
     <div className="app-layout bg-gradient" style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside className="sidebar glass" style={{ 
+      <aside className="sidebar" style={{ 
         width: '280px', 
         display: 'flex', 
         flexDirection: 'column', 
         padding: 'var(--spacing-lg)',
-        borderRight: '1px solid var(--glass-border)',
+        background: 'var(--surface)',
+        borderRight: '1px solid var(--border)',
+        boxShadow: 'var(--shadow-lg)',
         zIndex: 10
       }}>
         <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -38,7 +40,7 @@ const Layout = () => {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
           }}>
             <Wallet size={24} color="white" />
           </div>

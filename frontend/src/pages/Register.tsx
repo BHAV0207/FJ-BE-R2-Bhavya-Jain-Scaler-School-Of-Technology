@@ -32,8 +32,10 @@ const Register = () => {
       <div className="card glass auth-card" style={{ padding: '40px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ 
-            display: 'inline-flex', padding: '12px', background: 'rgba(99, 102, 241, 0.1)', 
-            borderRadius: '16px', color: 'var(--primary)', marginBottom: '16px' 
+            display: 'inline-flex', padding: '12px', background: 'rgba(16, 185, 129, 0.1)', 
+            borderRadius: '16px', color: 'var(--primary)', marginBottom: '16px',
+            margin: '0 auto 16px',
+            boxShadow: '0 8px 16px rgba(16, 185, 129, 0.2)'
           }}>
             <Wallet size={32} />
           </div>

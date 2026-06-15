@@ -47,8 +47,8 @@ const Login = () => {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            margin: '0 auto 16px',
-            boxShadow: '0 8px 16px rgba(99, 102, 241, 0.2)'
+             margin: '0 auto 16px',
+            boxShadow: '0 8px 16px rgba(16, 185, 129, 0.2)'
           }}>
             <LogIn size={32} color="white" />
           </div>
@@ -140,7 +140,7 @@ const Login = () => {
         right: '-5%', 
         width: '40%', 
         height: '40%', 
-        background: 'radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
         zIndex: 0
       }}></div>
       <div style={{ 

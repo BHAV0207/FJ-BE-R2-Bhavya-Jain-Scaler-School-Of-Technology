@@ -191,7 +191,7 @@ const Transactions = () => {
         </button>
       </div>
 
-      <div className="card glass" style={{ padding: '0', overflow: 'hidden', marginBottom: '24px' }}>
+      <div className="card glass" style={{ padding: '0', overflow: 'hidden', marginBottom: '24px', boxShadow: 'var(--shadow-md)', border: '1px solid var(--border)', background: 'var(--surface)' }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', gap: '16px', alignItems: 'center' }}>
           <div style={{ position: 'relative', flex: 1 }}>
             <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
@@ -199,8 +199,8 @@ const Transactions = () => {
               placeholder="Search transactions..." 
               style={{ 
                 paddingLeft: '44px', 
-                background: 'rgba(255,255,255,0.03)', 
-                border: '1px solid var(--glass-border)',
+                background: 'var(--bg-secondary)', 
+                border: '1px solid var(--border)',
                 borderRadius: '12px'
               }} 
               readOnly 
@@ -211,7 +211,7 @@ const Transactions = () => {
             <select 
               value={typeFilter} 
               onChange={e => { setTypeFilter(e.target.value); setPage(1); }}
-              style={{ paddingLeft: '44px', width: '180px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
+              style={{ paddingLeft: '44px', width: '180px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '12px' }}
             >
               <option value="">All Types</option>
               <option value="income">Income</option>
