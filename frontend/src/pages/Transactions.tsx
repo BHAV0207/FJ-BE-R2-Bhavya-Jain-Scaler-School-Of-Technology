@@ -366,17 +366,33 @@ const Transactions = () => {
               <div style={{ textAlign: 'center', padding: '32px' }}><div className="loading-spinner"></div></div>
             ) : receipt ? (
               <div>
-                <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', marginBottom: '24px', border: '1px solid var(--glass-border)' }}>
-                  <div style={{ fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)' }}>{receipt.fileName}</div>
-                  <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                    {(receipt.fileSize / 1024).toFixed(1)} KB · Uploaded {new Date(receipt.uploadedAt).toLocaleDateString()}
+                <div style={{ padding: '0', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', marginBottom: '24px', border: '1px solid var(--glass-border)', overflow: 'hidden' }}>
+                  {receipt.mimeType.startsWith('image/') ? (
+                    <div style={{ width: '100%', height: '240px', background: '#000', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+                      <img 
+                        src={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}${receipt.fileUrl}`} 
+                        alt="Receipt preview" 
+                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ padding: '48px 24px', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
+                      <Paperclip size={48} style={{ color: 'var(--text-secondary)', marginBottom: '16px', opacity: 0.5 }} />
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>PDF Receipt Attached</p>
+                    </div>
+                  )}
+                  <div style={{ padding: '16px 20px', borderTop: '1px solid var(--glass-border)' }}>
+                    <div style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--text-primary)', fontSize: '0.9375rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{receipt.fileName}</div>
+                    <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                      {(receipt.fileSize / 1024).toFixed(1)} KB · Uploaded {new Date(receipt.uploadedAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
                 <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <a href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}${receipt.fileUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none', height: '44px' }}>
-                    <Eye size={18} /> View
+                  <a href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}${receipt.fileUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none', height: '44px', borderRadius: '12px' }}>
+                    <Eye size={18} /> Full View
                   </a>
-                  <button className="btn btn-outline" onClick={handleReceiptDelete} style={{ justifyContent: 'center', color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)', height: '44px' }}>
+                  <button className="btn btn-outline" onClick={handleReceiptDelete} style={{ justifyContent: 'center', color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)', height: '44px', borderRadius: '12px' }}>
                     <Trash size={18} /> Delete
                   </button>
                 </div>

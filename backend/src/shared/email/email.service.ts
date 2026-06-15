@@ -8,10 +8,19 @@ export async function sendEmail(
   subject: string,
   html: string,
 ): Promise<void> {
-  await sgMail.send({
-    to,
-    from: env.EMAIL_FROM,
-    subject,
-    html,
-  });
+  try {
+    await sgMail.send({
+      to,
+      from: env.EMAIL_FROM,
+      subject,
+      html,
+    });
+    console.log(`✅ Email sent successfully to ${to}`);
+  } catch (error: any) {
+    if (error.response) {
+      console.error("❌ SendGrid Error Body:", JSON.stringify(error.response.body, null, 2));
+    }
+    console.error("❌ SendGrid Error:", error.message);
+    throw error;
+  }
 }
