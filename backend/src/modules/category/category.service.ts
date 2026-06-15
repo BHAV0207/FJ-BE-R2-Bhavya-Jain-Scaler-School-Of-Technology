@@ -6,6 +6,10 @@ export async function getAllCategories(userId: string) {
 }
 
 export async function createCategory(userId: string, data: { name: string; type: "income" | "expense" }) {
+  const existing = await categoryRepository.findByName(userId, data.name, data.type);
+  if (existing) {
+    throw new AppError(`Category "${data.name}" already exists for this type`, 409);
+  }
   return await categoryRepository.createCategory(userId, data);
 }
 

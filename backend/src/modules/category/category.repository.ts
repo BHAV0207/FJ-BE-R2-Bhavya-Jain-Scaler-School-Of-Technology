@@ -9,13 +9,14 @@ export function mapRowToCategory(row: any): CategoryEntity {
     isSystem: row.is_system,
     userId: row.user_id,
     createdAt: row.created_at,
+    deletedAt: row.deleted_at,
   };
 }
 
 export async function findById(id: string): Promise<CategoryEntity | null> {
   const result = await pool.query(
     `
-    SELECT id, name, type, is_system, user_id, created_at
+    SELECT id, name, type, is_system, user_id, created_at, deleted_at
     FROM categories
     WHERE id = $1
     `,
@@ -29,15 +30,34 @@ export async function findById(id: string): Promise<CategoryEntity | null> {
 export async function findAllByUser(userId: string): Promise<CategoryEntity[]> {
   const result = await pool.query(
     `
-    SELECT id, name, type, is_system, user_id, created_at
+    SELECT id, name, type, is_system, user_id, created_at, deleted_at
     FROM categories
-    WHERE user_id = $1 OR is_system = TRUE
+    WHERE (user_id = $1 OR is_system = TRUE) AND deleted_at IS NULL
     ORDER BY name ASC
     `,
     [userId],
   );
 
   return result.rows.map(mapRowToCategory);
+}
+
+export async function findByName(
+  userId: string,
+  name: string,
+  type: "income" | "expense",
+): Promise<CategoryEntity | null> {
+  const result = await pool.query(
+    `
+    SELECT id, name, type, is_system, user_id, created_at, deleted_at
+    FROM categories
+    WHERE LOWER(name) = LOWER($1) AND type = $2 AND (user_id = $3 OR is_system = TRUE)
+    LIMIT 1
+    `,
+    [name, type, userId],
+  );
+
+  if (result.rows.length === 0) return null;
+  return mapRowToCategory(result.rows[0]);
 }
 
 export async function createCategory(
@@ -48,7 +68,7 @@ export async function createCategory(
     `
     INSERT INTO categories (name, type, user_id, is_system)
     VALUES ($1, $2, $3, FALSE)
-    RETURNING id, name, type, is_system, user_id, created_at
+    RETURNING id, name, type, is_system, user_id, created_at, deleted_at
     `,
     [data.name, data.type, userId],
   );
@@ -85,7 +105,7 @@ export async function updateCategory(
     UPDATE categories
     SET ${updates.join(", ")}
     WHERE id = $${index} AND user_id = $${index + 1} AND is_system = FALSE
-    RETURNING id, name, type, is_system, user_id, created_at
+    RETURNING id, name, type, is_system, user_id, created_at, deleted_at
     `,
     values,
   );
@@ -100,7 +120,8 @@ export async function deleteCategory(
 ): Promise<boolean> {
   const result = await pool.query(
     `
-    DELETE FROM categories
+    UPDATE categories
+    SET deleted_at = NOW()
     WHERE id = $1 AND user_id = $2 AND is_system = FALSE
     `,
     [id, userId],

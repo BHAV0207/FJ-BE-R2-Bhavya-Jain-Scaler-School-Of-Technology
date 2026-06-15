@@ -57,27 +57,16 @@ export async function createTransaction(
 
   return {
     id: row.id,
-
     userId: row.user_id,
-
     categoryId: row.category_id,
-
     amount: Number(row.amount),
-
     baseAmount: Number(row.base_amount),
-
     exchangeRate: Number(row.exchange_rate),
-
     transactionType: row.transaction_type,
-
     currency: row.currency,
-
     description: row.description,
-
     transactionDate: row.transaction_date,
-
     createdAt: row.created_at,
-
     updatedAt: row.updated_at,
   };
 }
@@ -99,56 +88,44 @@ export async function findTransactions(
 
   if (dto.transactionType) {
     conditions.push(`transaction_type = $${parameterIndex}`);
-
     values.push(dto.transactionType);
-
     parameterIndex++;
   }
 
   if (dto.categoryId) {
     conditions.push(`category_id = $${parameterIndex}`);
-
     values.push(dto.categoryId);
-
     parameterIndex++;
   }
 
   if (dto.startDate) {
     conditions.push(`transaction_date >= $${parameterIndex}`);
-
     values.push(dto.startDate);
-
     parameterIndex++;
   }
 
   if (dto.endDate) {
     conditions.push(`transaction_date <= $${parameterIndex}`);
-
     values.push(dto.endDate);
-
     parameterIndex++;
   }
 
   const whereClause = conditions.join(" AND ");
 
-const sortColumnMap = {
-  transactionDate: "transaction_date",
-  amount: "base_amount",
-  createdAt: "created_at",
-} as const;
+  const sortColumnMap = {
+    transactionDate: "transaction_date",
+    amount: "base_amount",
+    createdAt: "created_at",
+  } as const;
 
   const orderBy = sortColumnMap[dto.sortBy];
-
   const order = dto.order === "asc" ? "ASC" : "DESC";
-
   const offset = (dto.page - 1) * dto.limit;
 
   const countResult = await pool.query(
     `
       SELECT COUNT(*) as count
-
       FROM transactions
-
       WHERE ${whereClause}
     `,
     values,
@@ -158,7 +135,6 @@ const sortColumnMap = {
 
   values.push(dto.limit);
   values.push(offset);
-
   const limitIndex = parameterIndex;
   const offsetIndex = parameterIndex + 1;
 
@@ -179,7 +155,7 @@ const sortColumnMap = {
         t.updated_at,
         c.name as category_name
       FROM transactions t
-      JOIN categories c ON t.category_id = c.id
+      LEFT JOIN categories c ON t.category_id = c.id
       WHERE ${whereClause.replace(/user_id/g, 't.user_id').replace(/transaction_type/g, 't.transaction_type').replace(/category_id/g, 't.category_id').replace(/transaction_date/g, 't.transaction_date')}
       ORDER BY t.${orderBy} ${order}
       LIMIT $${limitIndex}
@@ -190,29 +166,17 @@ const sortColumnMap = {
 
   const transactions: any[] = result.rows.map((row) => ({
     id: row.id,
-
     userId: row.user_id,
-
     categoryId: row.category_id,
-
     categoryName: row.category_name,
-
     amount: Number(row.amount),
-
     baseAmount: Number(row.base_amount),
-
     exchangeRate: Number(row.exchange_rate),
-
     transactionType: row.transaction_type,
-
     currency: row.currency,
-
     description: row.description,
-
     transactionDate: row.transaction_date,
-
     createdAt: row.created_at,
-
     updatedAt: row.updated_at,
   }));
 
@@ -242,7 +206,7 @@ export async function findTransactionById(
       t.updated_at,
       c.name as category_name
     FROM transactions t
-    JOIN categories c ON t.category_id = c.id
+    LEFT JOIN categories c ON t.category_id = c.id
     WHERE t.id = $1
     `,
     [id],
@@ -256,27 +220,17 @@ export async function findTransactionById(
 
   return {
     id: row.id,
-
     userId: row.user_id,
-
     categoryId: row.category_id,
-
+    categoryName: row.category_name,
     amount: Number(row.amount),
-
     baseAmount: Number(row.base_amount),
-
     exchangeRate: Number(row.exchange_rate),
-
     transactionType: row.transaction_type,
-
     currency: row.currency,
-
     description: row.description,
-
     transactionDate: row.transaction_date,
-
     createdAt: row.created_at,
-
     updatedAt: row.updated_at,
   };
 }
@@ -332,13 +286,11 @@ export async function updateTransaction(
 
   if (dto.baseAmount !== undefined) {
     updates.push(`base_amount=$${index++}`);
-
     values.push(dto.baseAmount);
   }
 
   if (dto.exchangeRate !== undefined) {
     updates.push(`exchange_rate=$${index++}`);
-
     values.push(dto.exchangeRate);
   }
 
@@ -350,34 +302,20 @@ export async function updateTransaction(
     `
     UPDATE transactions
     SET ${updates.join(", ")}
-
     WHERE id=$${index}
-
     RETURNING
-
-id,
-
-user_id,
-
-category_id,
-
-amount,
-
-base_amount,
-
-exchange_rate,
-
-transaction_type,
-
-currency,
-
-description,
-
-transaction_date,
-
-created_at,
-
-updated_at
+      id,
+      user_id,
+      category_id,
+      amount,
+      base_amount,
+      exchange_rate,
+      transaction_type,
+      currency,
+      description,
+      transaction_date,
+      created_at,
+      updated_at
     `,
     values,
   );
@@ -386,27 +324,16 @@ updated_at
 
   return {
     id: row.id,
-
     userId: row.user_id,
-
     categoryId: row.category_id,
-
     amount: Number(row.amount),
-
     baseAmount: Number(row.base_amount),
-
     exchangeRate: Number(row.exchange_rate),
-
     transactionType: row.transaction_type,
-
     currency: row.currency,
-
     description: row.description,
-
     transactionDate: row.transaction_date,
-
     createdAt: row.created_at,
-
     updatedAt: row.updated_at,
   };
 }

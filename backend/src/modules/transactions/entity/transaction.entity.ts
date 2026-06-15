@@ -24,4 +24,6 @@ export interface TransactionEntity {
   createdAt: Date;
 
   updatedAt: Date;
+
+  categoryName?: string;
 }

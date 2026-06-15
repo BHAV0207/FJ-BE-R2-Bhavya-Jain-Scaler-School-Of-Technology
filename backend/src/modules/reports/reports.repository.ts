@@ -61,7 +61,7 @@ export async function getCategoryWiseReport(userId: string) {
 
     FROM transactions t
 
-    JOIN categories c
+    LEFT JOIN categories c
 
       ON c.id = t.category_id
 

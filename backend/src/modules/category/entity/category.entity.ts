@@ -10,4 +10,5 @@ export interface CategoryEntity {
   userId: string | null;
 
   createdAt: Date;
+  deletedAt?: Date | null;
 }
