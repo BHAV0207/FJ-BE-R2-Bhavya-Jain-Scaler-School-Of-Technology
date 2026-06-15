@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { Plus, Filter, Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Plus, Search, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);

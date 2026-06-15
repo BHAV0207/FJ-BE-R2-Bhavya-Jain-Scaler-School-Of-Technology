@@ -11,13 +11,21 @@ import receiptRoutes from "./modules/uploads/receipt/receipt.routes.js";
 import categoryRoutes from "./modules/category/category.routes.js";
 import passport from "./shared/security/passport.js";
 import { startBudgetNotificationJob } from "./shared/jobs/budget-notification.job.js";
+import cors from "cors";
+import { env } from "./config/env.js";
 
 const app = express();
 
+app.use(
+  cors({
+    origin: [env.FRONTEND_URL || "http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(passport.initialize());
 startBudgetNotificationJob();
-  
+
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
@@ -28,8 +36,6 @@ app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/v1/receipts", receiptRoutes);
 
-app.use(errorHandler);
-
 //health check route
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -37,5 +43,7 @@ app.get("/health", (req, res) => {
     message: "Server is running",
   });
 });
+
+app.use(errorHandler);
 
 export default app;

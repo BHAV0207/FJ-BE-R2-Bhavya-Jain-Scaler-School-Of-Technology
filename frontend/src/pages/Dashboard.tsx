@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../api';
 import { TrendingUp, TrendingDown, Landmark, Wallet } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -72,7 +72,7 @@ const Dashboard = () => {
                   itemStyle={{ color: 'var(--text-main)' }}
                 />
                 <Bar dataKey="total_amount" radius={[4, 4, 0, 0]}>
-                  {data.categorySpending.map((entry, index) => (
+                  {data.categorySpending.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={index % 2 === 0 ? 'var(--primary)' : 'var(--accent-secondary)'} />
                   ))}
                 </Bar>

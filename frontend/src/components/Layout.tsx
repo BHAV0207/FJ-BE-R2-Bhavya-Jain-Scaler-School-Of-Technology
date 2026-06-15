@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, ReceiptText, ListTree, PieChart, LogOut } from 'lucide-react';
