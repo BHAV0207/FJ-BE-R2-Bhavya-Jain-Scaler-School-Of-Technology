@@ -60,7 +60,7 @@ const Reports = () => {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ border: 'none', borderRadius: '8px', boxShadow: 'var(--shadow-lg)' }}
-                  formatter={(value: number) => [formatAmount(value, currency), 'Total']}
+                  formatter={(value: any) => [formatAmount(Number(value), currency), 'Total']}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -87,7 +87,7 @@ const Reports = () => {
                 <Tooltip 
                   cursor={{ fill: 'var(--bg-secondary)' }}
                   contentStyle={{ border: 'none', borderRadius: '8px', boxShadow: 'var(--shadow-lg)' }}
-                  formatter={(value: number) => [formatAmount(value, currency), '']}
+                  formatter={(value: any) => [formatAmount(Number(value), currency), '']}
                 />
                 <Legend />
                 <Bar dataKey="income" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={20} />

@@ -29,13 +29,9 @@ const envSchema = z.object({
 
   FRONTEND_URL: z.string(),
 
-  SMTP_HOST: z.string(),
+  SENDGRID_API_KEY: z.string().min(1),
 
-  SMTP_PORT: z.coerce.number(),
-
-  SMTP_USER: z.string(),
-
-  SMTP_PASSWORD: z.string(),
+  EMAIL_FROM: z.string().email(),
 });
 
 /**

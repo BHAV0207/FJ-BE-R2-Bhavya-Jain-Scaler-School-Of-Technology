@@ -86,7 +86,7 @@ const Dashboard = () => {
                   <Tooltip 
                     contentStyle={{ border: 'none', borderRadius: '8px', boxShadow: 'var(--shadow-lg)', fontSize: '12px' }}
                     cursor={{ stroke: 'var(--primary)', strokeWidth: 1 }}
-                    formatter={(value: number) => [`${getCurrencySymbol(currency)}${value.toLocaleString()}`, '']}
+                    formatter={(value: any) => [`${getCurrencySymbol(currency)}${Number(value).toLocaleString()}`, '']}
                   />
                   <Area type="monotone" dataKey="income" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.05} strokeWidth={2} />
                   <Area type="monotone" dataKey="expense" stroke="var(--danger)" fill="var(--danger)" fillOpacity={0.05} strokeWidth={2} />
