@@ -1,72 +1,35 @@
-import type { Request, Response, NextFunction } from "express";
-
+import type { Request, Response } from "express";
 import * as reportsService from "./reports.service.js";
+import { asyncHandler } from "../../shared/errors/asyncHandler.js";
 
-export async function getSummary(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const response = await reportsService.getSummary(req.user!.id);
+export const getSummary = asyncHandler(async (req: Request, res: Response) => {
+  const response = await reportsService.getSummary(req.user!.id);
+  return res.status(200).json({
+    success: true,
+    data: response,
+  });
+});
 
-    return res.status(200).json({
-      success: true,
-      data: response,
-    });
-  } catch (error) {
-    return next(error);
-  }
-}
+export const getCategoryWiseReport = asyncHandler(async (req: Request, res: Response) => {
+  const response = await reportsService.getCategoryWiseReport(req.user!.id);
+  return res.status(200).json({
+    success: true,
+    data: response,
+  });
+});
 
-export async function getCategoryWiseReport(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const response = await reportsService.getCategoryWiseReport(
-      req.user!.id,
-    );
+export const getMonthlyReport = asyncHandler(async (req: Request, res: Response) => {
+  const response = await reportsService.getMonthlyReport(req.user!.id);
+  return res.status(200).json({
+    success: true,
+    data: response,
+  });
+});
 
-    return res.status(200).json({
-      success: true,
-      data: response,
-    });
-  } catch (error) {
-    return next(error);
-  }
-}
-
-export async function getMonthlyReport(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const response = await reportsService.getMonthlyReport(req.user!.id);
-
-    return res.status(200).json({
-      success: true,
-      data: response,
-    });
-  } catch (error) {
-    return next(error);
-  }
-}
-export async function getFullReport(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const response = await reportsService.getFullReport(req.user!.id);
-
-    return res.status(200).json({
-      success: true,
-      data: response,
-    });
-  } catch (error) {
-    return next(error);
-  }
-}
+export const getFullReport = asyncHandler(async (req: Request, res: Response) => {
+  const response = await reportsService.getFullReport(req.user!.id);
+  return res.status(200).json({
+    success: true,
+    data: response,
+  });
+});
