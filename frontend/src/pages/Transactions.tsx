@@ -373,7 +373,7 @@ const Transactions = () => {
                   </div>
                 </div>
                 <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <a href={`http://localhost:3000${receipt.fileUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none', height: '44px' }}>
+                  <a href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}${receipt.fileUrl}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ justifyContent: 'center', textDecoration: 'none', height: '44px' }}>
                     <Eye size={18} /> View
                   </a>
                   <button className="btn btn-outline" onClick={handleReceiptDelete} style={{ justifyContent: 'center', color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)', height: '44px' }}>

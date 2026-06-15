@@ -3,7 +3,7 @@ import axios from 'axios';
 const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || `${BASE}/api/v1`,
+  baseURL: `${BASE}/api/v1`,
 });
 
 // The dashboard route is mounted at /dashboard (not /api/v1/dashboard)
